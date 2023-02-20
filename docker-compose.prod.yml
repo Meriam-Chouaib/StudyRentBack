@@ -17,8 +17,8 @@ services:
 
   #App
   app:
-    image: study-rent-api
-    container_name: study-rent-api
+    image: study-rent-api-prod
+    container_name: study-rent-api-prod
     build:
       context: .
       dockerfile: Dockerfile

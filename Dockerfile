@@ -4,29 +4,27 @@ FROM node:alpine As development
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY package.json yarn.lock tsconfig.json ecosystem.config.json ./
 
-RUN yarn install
+COPY ./src ./src
 
-COPY . .
 
-RUN yarn build
+RUN ls -a
+
+RUN yarn install --pure-lockfile && yarn build
 
 #--< build image for production >--
 
 FROM node:alpine as production
 
 ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
 
-WORKDIR /usr/src/app
+WORKDIR /usr/prod/app
 
-COPY package*.json ./
+ENV NODE_ENV=production
 
-RUN yarn install --only=production
+COPY package.json yarn.lock ecosystem.config.json ./
 
-COPY . .
+RUN yarn install --production --pure-lockfile
 
 COPY --from=development /usr/src/app/dist ./dist
-
-RUN yarn build
