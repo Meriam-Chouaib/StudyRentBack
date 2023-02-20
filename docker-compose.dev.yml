@@ -30,8 +30,8 @@ services:
       - /sessions
   #App
   app:
-    image: study-rent-api
-    container_name: study-rent-api
+    image: study-rent-api-dev
+    container_name: study-rent-api-dev
     build:
       context: .
       dockerfile: Dockerfile

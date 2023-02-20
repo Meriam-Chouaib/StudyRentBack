@@ -2,9 +2,9 @@
   "scripts": {
     "build": "tsc -p .",
     "start:dev": "ts-node-dev --respawn --transpile-only src/main.ts",
-    "start": "pm2 stop study_rent_prod && pm2 start -f dist/main.js --name study_rent_prod && pm2 list -d",
+    "start": "pm2 start ecosystem.config.json --no-daemon && pm2 list",
     "docker:dev": "docker-compose -f docker-compose.dev.yml up",
-    "docker:prod": "docker-compose -f docker-compose.prod.yml up",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check **/*.ts",
