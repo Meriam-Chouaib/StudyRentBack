@@ -2,7 +2,7 @@ import cors from 'cors';
 import express, { Application, NextFunction, Request, Response } from 'express';
 import { config } from './config/config';
 import { Endpoints } from './config/endpoints';
-import { mainRouter } from './routes/main.routes';
+import { router } from './routes/main.routes';
 
 const { PORT } = config;
 const { API } = Endpoints;
@@ -14,7 +14,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 //----------------------Router---------------------------------------------------
-app.use(API, mainRouter);
+app.use(API, () => {
+  console.log('eeeeeeeeeeeeeee');
+});
 
 //----------------------redirect to 404 not found--------------------------------
 app.all('*', (req: Request, res: Response, next: NextFunction) => {

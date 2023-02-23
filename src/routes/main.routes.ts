@@ -1,3 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 import { Endpoints } from '../config/endpoints';
-export const mainRouter = express.Router();
+import authRoutes from './auth.routes';
+
+export const router = express.Router();
+router.use(Endpoints.auth.ROOT, authRoutes);
