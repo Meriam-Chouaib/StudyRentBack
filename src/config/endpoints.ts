@@ -5,5 +5,6 @@ export const Endpoints = {
   auth: {
     ROOT: '/auth',
     SIGNUP: '/signup',
+    SIGNIN: '/signin',
   },
 };

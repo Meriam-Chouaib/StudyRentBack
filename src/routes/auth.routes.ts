@@ -1,5 +1,5 @@
 import express from 'express';
-import { signUp } from '../controllers/auth.controller';
+import { signUp, signIn } from '../controllers/auth.controller';
 import { Endpoints } from '../config/endpoints';
 
 const authRouter = express.Router();
@@ -15,5 +15,16 @@ const authRouter = express.Router();
  */
 
 authRouter.post(Endpoints.auth.SIGNUP, signUp);
+
+/**
+ * @swagger
+ * /signin:
+ *   post:
+ *     summary: authentification of the user
+ *     description: authentification of the user
+ *       200:
+ *         description: User authenticated!
+ */
+authRouter.post(Endpoints.auth.SIGNIN, signIn);
 
 export default authRouter;
