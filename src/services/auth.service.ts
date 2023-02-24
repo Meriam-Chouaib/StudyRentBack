@@ -5,8 +5,10 @@ import { signToken } from './jwt.service';
 
 //-------------------------sign up ------------
 const signUp = async (data: User) => {
-  data.password = await bcrypt.hash(data.password, 15);
-  return await userQueries.signUp({ ...data });
+  const hash = bcrypt.hashSync(data.password, 15);
+  data.password = hash;
+
+  return await userQueries.signUp(data);
 };
 
 //-------------------------sign in ------------
