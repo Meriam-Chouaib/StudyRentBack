@@ -2,7 +2,9 @@ import cors from 'cors';
 import express, { Application, NextFunction, Request, Response } from 'express';
 import { config } from './config/config';
 import { Endpoints } from './config/endpoints';
+import { errorHandler } from './errors';
 import { mainRouter } from './routes/main.routes';
+import { Logger } from './logger';
 
 const { PORT } = config;
 const { API } = Endpoints;
@@ -13,18 +15,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
-//----------------------Router---------------------------------------------------
+// Process Routes
 app.use(API, mainRouter);
 
-//----------------------redirect to 404 not found--------------------------------
+// Send 404 not found for unknown routes
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
   res.status(404).send('this request is not found!');
   next();
 });
 
-//---------------------- Datasource connection-----------------------------------
+// Handle errors
+app.use(errorHandler);
+
+// Serve
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  Logger.info(`Server is running on port ${PORT}`);
 });
-
-

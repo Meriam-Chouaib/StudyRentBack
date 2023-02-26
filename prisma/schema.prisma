@@ -12,10 +12,11 @@ model User {
   username  String
   password  String
   image     String
-  statut    user_statut @default(OFFLINE)
-  role      user_role
   createdAt DateTime    @default(now())
   updatedAt DateTime    @default(now())
+  posts    Post[]
+   statut    user_statut @default(OFFLINE)
+  role      user_role 
 }
 
 enum user_statut {
@@ -27,4 +28,40 @@ enum user_role {
   STUDENT
   OWNER
   ADMIN
+}
+model           Files{
+  id            Int @id @default(autoincrement())
+  typeFile      String 
+  path          String
+  postId        Int
+
+  appartementId Int 
+  appartement Appartement @relation(fields:[appartementId], references: [id])
+
+}
+model Appartement{
+  id            Int @id @default(autoincrement())
+  nbRooms       Int
+  surface       Int
+  price         Decimal
+  nbRoommate    Int 
+  region        String
+  city          String
+  state         String
+  country       String
+  isLocated     Boolean
+  posts         Post[] 
+   files         Files[]
+}
+model Post {
+  id            Int       @id @default(autoincrement())
+  datePost      DateTime  @default(now())
+  title         String
+  description   String
+  posterId      Int
+  likes         Int
+  appartementId   Int
+  poster        User     @relation(fields: [posterId], references: [id])
+  appartement    Appartement @relation(fields: [appartementId], references: [id])
+   
 }

@@ -1,6 +1,8 @@
 import express from 'express';
-import { signUp, signIn } from '../controllers/auth.controller';
 import { Endpoints } from '../config/endpoints';
+import { validate } from '../middlewares/validate.middleware';
+import {  AuthController} from '../controllers';
+import { authSchema } from '../schemas/auth';
 
 const authRouter = express.Router();
 
@@ -14,7 +16,7 @@ const authRouter = express.Router();
  *         description: User created successfully!
  */
 
-authRouter.post(Endpoints.auth.SIGNUP, signUp);
+authRouter.post(Endpoints.auth.SIGNUP, validate(authSchema.register), AuthController.signUp);
 
 /**
  * @swagger
@@ -25,6 +27,6 @@ authRouter.post(Endpoints.auth.SIGNUP, signUp);
  *       200:
  *         description: User authenticated!
  */
-authRouter.post(Endpoints.auth.SIGNIN, signIn);
+authRouter.post(Endpoints.auth.SIGNIN, AuthController.signIn);
 
 export default authRouter;
