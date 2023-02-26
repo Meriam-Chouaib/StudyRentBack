@@ -1,7 +1,7 @@
 import express from 'express';
 import { Endpoints } from '../config/endpoints';
 import { validate } from '../middlewares/validate.middleware';
-import {  AuthController} from '../controllers';
+import { AuthController } from '../controllers';
 import { authSchema } from '../schemas/auth';
 
 const authRouter = express.Router();
@@ -27,6 +27,6 @@ authRouter.post(Endpoints.auth.SIGNUP, validate(authSchema.register), AuthContro
  *       200:
  *         description: User authenticated!
  */
-authRouter.post(Endpoints.auth.SIGNIN, AuthController.signIn);
+authRouter.post(Endpoints.auth.SIGNIN, validate(authSchema.login), AuthController.signIn);
 
 export default authRouter;
