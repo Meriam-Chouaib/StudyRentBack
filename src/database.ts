@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-
+import { Logger } from './logger';
 let database: PrismaClient;
 
 export const getDbInstance = (): PrismaClient => {
@@ -8,10 +8,10 @@ export const getDbInstance = (): PrismaClient => {
     database
       .$connect()
       .then(() => {
-        console.log('Connected to database');
+        Logger.info('Connected to database', 'APP');
       })
       .catch((err: any) => {
-        console.error('Error connecting to database:', err);
+        Logger.error(err.message, 'Datasource');
       });
   }
   return database;

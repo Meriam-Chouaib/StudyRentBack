@@ -1,5 +1,7 @@
 import { User } from '@prisma/client';
 import { Request, Response, NextFunction } from 'express';
+import httpStatus from 'http-status';
+import { Logger } from '../logger';
 import * as authService from '../services/auth.service';
 
 //-------------------------sign up --------------------------------------
@@ -14,9 +16,10 @@ const signUp = async (req: Request, res: Response, next: NextFunction): Promise<
   try {
     const data: User = req.body as User;
     const user = await authService.signUp(data);
-    res.status(200).json(user);
+    res.status(httpStatus.CREATED).send(user);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    Logger.error(err, 'AuthController');
+    next(err);
   }
 };
 
