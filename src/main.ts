@@ -27,8 +27,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-//---------------------- test routes----------------------------------------------
-app.use('/hello', (request: Request, response: Response) => {
-  console.log('Here i am!');
-  response.status(200).send('Hello world!');
-});
+
