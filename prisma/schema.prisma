@@ -51,7 +51,7 @@ model Appartement{
   country       String
   isLocated     Boolean
   posts         Post[] 
-   files         Files[]
+  files         Files[]
 }
 model Post {
   id            Int       @id @default(autoincrement())

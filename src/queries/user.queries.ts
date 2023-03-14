@@ -17,3 +17,13 @@ export const getUser = async (email: string) => {
     where: { email },
   });
 };
+
+export const getUserById = async (id: number) => {
+  return await db.user.findFirst({
+    where: { id },
+  });
+};
+
+export const getAllUsers = async () => {
+  return await db.user.findMany();
+};

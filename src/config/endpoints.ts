@@ -7,4 +7,11 @@ export const Endpoints = {
     SIGNUP: '/signup',
     SIGNIN: '/signin',
   },
+  post: {
+    ROOT: '/posts',
+    CREATE: '/create',
+  },
+  user: {
+    ALL: '/users',
+  },
 };
