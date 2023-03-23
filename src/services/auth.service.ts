@@ -15,12 +15,14 @@ const signUp = async (data: User) => {
       } else {
         const hash = bcrypt.hashSync(data.password, 15);
         data.password = hash;
-        const userCreated = await userQueries.signUp(data);
-        return new ApiResponse(200, userCreated, 'User created successfully!');
+        data.image='test.png';
+        const user= await userQueries.signUp(data);
+        const token = signToken(data.id);
+        const result={user, token};
+        return new ApiResponse(200, result, 'User created successfully!');
       }
   } catch (e) {
-    console.log(e+'errrrr');
-    
+       
     throw new ApiError(e.statusCode, e.message);
   }
 
@@ -38,7 +40,8 @@ const signIn = async (email: string, password: string) => {
        throw new ApiError(404, MESSAGES.BAD_CREDENTIAL);
      } else {
       const token = signToken(user.id);
-      const data = {user,token}
+    
+      const data = { user, token };
    return new ApiResponse(200, data, 'User logged successfully!');
           
      }
