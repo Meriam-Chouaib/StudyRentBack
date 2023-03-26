@@ -1,8 +1,10 @@
+
 import { Post } from '@prisma/client';
 import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import { Logger } from '../logger';
 import * as postService from '../services/post.service';
+import ApiError from '../errors/ApiError';
 
 //------------------------- create post --------------------------------------
 /**
@@ -17,10 +19,10 @@ const createPost = async (req: Request, res: Response, next: NextFunction): Prom
     const data: Post = req.body as Post;
     const post = await postService.createPost(data);
     res.status(httpStatus.OK).send(post);
-  } catch (err) {
-    Logger.error(err, 'PostController');
-    next(err);
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
   }
+
 };
 
 export { createPost };

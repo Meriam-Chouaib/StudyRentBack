@@ -60,7 +60,7 @@ model Post {
   title         String
   description   String
   posterId      Int
-  likes         Int
+  likes         Int    @default(0)
   appartementId   Int
   poster        User     @relation(fields: [posterId], references: [id])
   appartement    Appartement @relation(fields: [appartementId], references: [id])
