@@ -14,4 +14,8 @@ export const Endpoints = {
   user: {
     ALL: '/users',
   },
+  appartement: {
+    ROOT: '/appartements',
+    CREATE: '/create',
+  },
 };

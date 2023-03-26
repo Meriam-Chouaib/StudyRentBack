@@ -35,7 +35,6 @@ model           Files{
   typeFile      String 
   path          String
   postId        Int
-
   appartementId Int 
   appartement Appartement @relation(fields:[appartementId], references: [id])
 
@@ -50,8 +49,8 @@ model Appartement{
   city          String
   state         String
   country       String
-  isLocated     Boolean
-  posts         Post[] 
+  isLocated     Boolean @default(false)
+  posts         Post[]  
   files         Files[]
 }
 model Post {
