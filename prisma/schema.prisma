@@ -12,6 +12,7 @@ model User {
   username  String
   password  String
   image     String
+  isLogged Boolean  @default(true)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @default(now())
   posts    Post[]
@@ -51,7 +52,7 @@ model Appartement{
   country       String
   isLocated     Boolean
   posts         Post[] 
-   files         Files[]
+  files         Files[]
 }
 model Post {
   id            Int       @id @default(autoincrement())
