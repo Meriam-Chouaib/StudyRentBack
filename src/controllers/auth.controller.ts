@@ -34,7 +34,7 @@ const signIn = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
   try {
   const result =     await authService.signIn(email, password);
- res.json({ result });
+ res.status(200).send(result);
   } catch (err: any) {
   
      next(err);

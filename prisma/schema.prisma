@@ -12,6 +12,7 @@ model User {
   username  String
   password  String
   image     String
+  isLogged Boolean  @default(true)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @default(now())
   posts    Post[]
