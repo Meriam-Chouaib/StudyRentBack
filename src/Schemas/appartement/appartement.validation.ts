@@ -10,7 +10,7 @@ const appartmentBody: Record<keyof CreateAppartement, any> = {
   nbRooms: Joi.number().required(),
   nbRoommate: Joi.number().required(),
   price: Joi.number().required(),
- 
+  files: Joi.any(),
 };
 
 export const appartmentCreate = {

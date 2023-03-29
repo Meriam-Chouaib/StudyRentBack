@@ -32,9 +32,10 @@ enum user_role {
 }
 model           Files{
   id            Int @id @default(autoincrement())
-  typeFile      String 
-  path          String
-  postId        Int
+  typeFile      String?
+  filename      String
+  path          String?
+  postId        Int?
   appartementId Int 
   appartement Appartement @relation(fields:[appartementId], references: [id])
 

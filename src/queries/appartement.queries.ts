@@ -5,7 +5,15 @@ import { getDbInstance } from '../database';
 const db = getDbInstance();
 
 export const createAppartement = async (appartement: Appartement): Promise<Appartement> => {
-  return await db.appartement.create({
-    data: { ...appartement },
-  });
+  try {
+    console.log('data query', appartement);
+
+    const savedAppartement = await db.appartement.create({
+      data: appartement,
+    });
+    console.log('data saved', savedAppartement);
+    return savedAppartement;
+  } catch (err) {
+    console.log(err.message);
+  }
 };

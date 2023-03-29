@@ -5,12 +5,14 @@ import { ApiError } from '../errors';
 import httpStatus from 'http-status';
 import { Logger } from '../logger';
 import { ValidationError } from '../errors/ValidationError';
-
+// TODO conversion from string to json avant pick
 export const validate =
   (schema: Record<string, any>) =>
   (req: Request, res: Response, next: NextFunction): void => {
     const validSchema = pick(schema, ['params', 'query', 'body']);
+
     const object = pick(req, Object.keys(validSchema));
+
     const { value, error } = Joi.compile(validSchema)
       .prefs({ errors: { label: 'key' }, abortEarly: false })
       .validate(object);
