@@ -1,8 +1,10 @@
+import upload from '../middlewares/multer';
 import express from 'express';
 import { Endpoints } from '../config/endpoints';
 import { validate } from '../middlewares/validate.middleware';
 import { AppartementController } from '../controllers';
 import { appartementSchema } from '../Schemas/appartement';
+import { fileSchema } from '../Schemas/file';
 
 const appartementRouter = express.Router();
 
@@ -18,7 +20,9 @@ const appartementRouter = express.Router();
 
 appartementRouter.post(
   Endpoints.appartement.CREATE,
-  validate(appartementSchema.appartmentCreate),
+  //validate(appartementSchema.appartmentCreate),
+  // validate(fileSchema.fileCreate),
+  upload.array('files'),
   AppartementController.createAppartement,
 );
 

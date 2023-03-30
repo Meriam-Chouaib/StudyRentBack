@@ -1,3 +1,4 @@
+import { Appartement } from '@prisma/client';
 import Joi from 'joi';
 import { CreateAppartement } from '../../types/appartement/appartement.types';
 
@@ -10,7 +11,6 @@ const appartmentBody: Record<keyof CreateAppartement, any> = {
   nbRooms: Joi.number().required(),
   nbRoommate: Joi.number().required(),
   price: Joi.number().required(),
- 
 };
 
 export const appartmentCreate = {
