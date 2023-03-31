@@ -4,6 +4,8 @@ import { validate } from '../middlewares/validate.middleware';
 import { PostController } from '../controllers';
 
 import { postSchema } from '../Schemas/post';
+import { postMiddleware } from '..//middlewares/post.validate.middelware';
+import upload from '../middlewares/multer';
 
 const postRouter = express.Router();
 
@@ -17,6 +19,12 @@ const postRouter = express.Router();
  *         description: Post created successfully!
  */
 
-postRouter.post(Endpoints.post.CREATE, validate(postSchema.postCreate), PostController.createPost);
+postRouter.post(
+  Endpoints.post.CREATE,
+  upload.array('files'),
+
+  postMiddleware,
+  PostController.createPost,
+);
 
 export default postRouter;

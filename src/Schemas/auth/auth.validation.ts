@@ -8,6 +8,7 @@ const registerBody: Record<keyof SignUpUser, any> = {
   statut: Joi.string().required(),
   role: Joi.string().required(),
   image: Joi.string().optional(),
+  isLogged: Joi.optional(),
 };
 
 export const register = {
