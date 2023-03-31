@@ -32,12 +32,13 @@ enum user_role {
 }
 model           Files{
   id            Int @id @default(autoincrement())
-  typeFile      String?
-  filename      String
-  path          String?
-  postId        Int?
-  appartementId Int 
-  appartement Appartement @relation(fields:[appartementId], references: [id])
+
+  filename      String  
+
+  postId        Int   
+  //appartementId Int 
+  //appartement Appartement @relation(fields:[appartementId], references: [id])
+  post     Post @relation(fields: [postId], references: [id])
 
 }
 model Appartement{
@@ -51,8 +52,8 @@ model Appartement{
   state         String
   country       String
   isLocated     Boolean @default(false)
-  posts         Post[]  
-  files         Files[]
+  //posts         Post[]  
+ // files         Files[]
 }
 model Post {
   id            Int       @id @default(autoincrement())
@@ -61,8 +62,16 @@ model Post {
   description   String
   posterId      Int
   likes         Int    @default(0)
-  appartementId   Int
   poster        User     @relation(fields: [posterId], references: [id])
-  appartement    Appartement @relation(fields: [appartementId], references: [id])
-   
+  //appartement    Appartement @relation(fields: [appartementId], references: [id])
+  files         Files[]
+  nbRooms       Int @default(0)
+  surface       Int @default(0)
+  price         Decimal @default(0)
+  nbRoommate    Int @default(0)
+  region        String @default("")
+  city          String @default("")
+  state         String @default("")
+  country       String   @default("")
+  isLocated     Boolean @default(false)
 }
