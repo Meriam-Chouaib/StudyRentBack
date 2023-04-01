@@ -27,4 +27,16 @@ postRouter.post(
   PostController.createPost,
 );
 
+/**
+ * @swagger
+ * /:
+ *   posts:
+ *     summary: Get list of posts
+ *     description: Get list of posts
+ *       200:
+ *         description: list of posts
+ */
+
+postRouter.get(Endpoints.ROOT, PostController.getPosts);
+
 export default postRouter;

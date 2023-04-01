@@ -1,4 +1,5 @@
-import { Post } from '@prisma/client';
+import { Post, Prisma } from '@prisma/client';
+import { GetPostsParams } from '../types/post/post.types';
 import { getDbInstance } from '../database';
 
 //-----------connection to the database
