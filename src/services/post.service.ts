@@ -4,7 +4,9 @@ import ApiError from '../errors/ApiError';
 import httpStatus from 'http-status';
 import * as fileQueries from '../queries/file.queries';
 import ApiResponse from '../utils/ApiResponse';
+import { GetPostsParams } from '../types/post/post.types';
 
+// create post
 const createPost = async (data: Post, fileData: Files[]) => {
   try {
     const post = await postQueries.createPost({
@@ -24,12 +26,23 @@ const createPost = async (data: Post, fileData: Files[]) => {
       ...post,
       files: fileCreated,
     };
-    console.log(result);
 
-    return new ApiResponse(httpStatus.OK, result, 'post created successfully!');
+    if (post && fileCreated) {
+      return result;
+    }
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
 };
 
-export { createPost };
+//get posts
+const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
+  try {
+    const result = await postQueries.getPosts({ page, rowsPerPage, filter });
+    return new ApiResponse(httpStatus.OK, result, 'List of posts');
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+
+export { createPost, getPosts };
