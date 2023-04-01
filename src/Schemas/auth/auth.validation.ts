@@ -4,7 +4,7 @@ import { SignUpUser } from '../../types/user/user.types';
 const registerBody: Record<keyof SignUpUser, any> = {
   email: Joi.string().required().email(),
   password: Joi.string().required().min(6).max(30),
-  username: Joi.string().required().min(6).max(30),
+  username: Joi.string().required().max(30),
   statut: Joi.string().required(),
   role: Joi.string().required(),
   image: Joi.string().optional(),
