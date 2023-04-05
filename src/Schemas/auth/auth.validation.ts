@@ -5,7 +5,8 @@ const registerBody: Record<keyof SignUpUser, any> = {
   email: Joi.string().required().email(),
   password: Joi.string()
     .required()
-    .pattern(new RegExp('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,30}$')),
+    .pattern(new RegExp('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,30}$'))
+    .message('signupForm.password_invalid'),
   username: Joi.string().required().max(30),
   statut: Joi.string().required(),
   role: Joi.string().required(),
