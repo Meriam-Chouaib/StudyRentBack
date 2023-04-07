@@ -10,7 +10,8 @@ import { GetPostsParams } from '../types/post/post.types';
 const createPost = async (data: Post, fileData: Files[]) => {
   try {
     const post = await postQueries.createPost({
-      nbRoommate: Number(data.nbRoommate),
+      nb_roommate: Number(data.nb_roommate),
+      postal_code: Number(data.postal_code),
       ...data,
     });
     const fileCreated = await Promise.all(
@@ -45,4 +46,17 @@ const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
   }
 };
 
-export { createPost, getPosts };
+// get post by id
+const getPostById = async (postId: number): Promise<Post> => {
+  try {
+    const post: Post | null = await postQueries.getPostById(postId);
+    if (!post) {
+      throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
+    }
+    return post;
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+
+export { createPost, getPosts, getPostById };

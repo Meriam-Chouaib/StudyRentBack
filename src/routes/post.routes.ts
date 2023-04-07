@@ -39,4 +39,16 @@ postRouter.post(
 
 postRouter.get(Endpoints.ROOT, PostController.getPosts);
 
+/**
+ * @swagger
+ * /:
+ *   post:
+ *     summary: Get post
+ *     description: Get single post
+ *       200:
+ *         description: get post by id
+ */
+
+postRouter.get(Endpoints.post.SINGLE, PostController.getPostById);
+
 export default postRouter;

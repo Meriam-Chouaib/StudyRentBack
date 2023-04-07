@@ -4,12 +4,11 @@ import Joi from 'joi';
 export const postSchema = Joi.object().keys({
   id: Joi.number().optional().empty(),
   postal_code: Joi.number().required(),
+
   datePost: Joi.date().default(() => new Date()),
   title: Joi.string().required().min(6).max(30),
   description: Joi.string().required().min(6).max(30),
   likes: Joi.number().optional(),
-  region: Joi.string().required().min(3),
-  country: Joi.string().required().min(3),
   state: Joi.string().required().min(3),
   city: Joi.string().required().min(3),
   surface: Joi.number().required(),
@@ -17,6 +16,5 @@ export const postSchema = Joi.object().keys({
   nb_roommate: Joi.number().required(),
   price: Joi.number().required(),
   posterId: Joi.number().required(),
-
   isLocated: Joi.boolean().optional,
 });

@@ -53,4 +53,20 @@ const getPosts = async (req: Request, res: Response, next: NextFunction): Promis
   }
 };
 
-export { createPost, getPosts };
+// get post by id
+const getPostById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const postId = req.params.id;
+    const post = await postService.getPostById(Number(postId));
+
+    if (!post) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
+    }
+
+    res.status(httpStatus.OK).send(post);
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+
+export { createPost, getPosts, getPostById };

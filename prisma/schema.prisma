@@ -47,7 +47,7 @@ model Appartement{
   surface       Int
   price         Decimal
   nbRoommate    Int 
-  region        String
+
   city          String
   state         String
   country       String
@@ -69,10 +69,9 @@ model Post {
   surface       Int @default(0)
   price         Decimal @default(0)
   nb_roommate    Int @default(0)
-  region        String @default("")
+ 
   city          String @default("")
   state         String @default("")
-  country       String   @default("")
   isLocated     Boolean @default(false)
   postal_code   Int @default(0)
 }
