@@ -8,20 +8,52 @@ const db = getDbInstance();
 // create post
 
 export const createPost = async (post: Post): Promise<Post> => {
-  return await db.post.create({
-    data: { ...post },
-  });
+  try {
+    return await db.post.create({
+      data: { ...post },
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 // get posts filtred
 
 export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): Promise<Post[]> => {
-  return await db.post.findMany({
-    skip: (page - 1) * rowsPerPage,
-    take: rowsPerPage,
-    where: filter,
-    include: {
-      files: true,
-    },
-  });
+  try {
+    return await db.post.findMany({
+      skip: (page - 1) * rowsPerPage,
+      take: rowsPerPage,
+      where: filter,
+      include: {
+        files: true,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+// get post by id
+export const getPostById = async (postId: number): Promise<Post | null> => {
+  try {
+    const post: Post | null = await db.post.findUnique({
+      where: { id: postId },
+      include: {
+        files: true,
+      },
+    });
+    return post;
+  } catch (err) {
+    console.log(err);
+  }
+};
+// delete post by id
+export const deletePost = async (postId: number): Promise<void> => {
+  try {
+    await db.post.delete({
+      where: { id: postId },
+    });
+  } catch (err) {
+    console.log(err);
+  }
 };

@@ -53,4 +53,49 @@ const getPosts = async (req: Request, res: Response, next: NextFunction): Promis
   }
 };
 
-export { createPost, getPosts };
+// get post by id
+const getPostById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void | ApiError> => {
+  try {
+    const postId = req.params.id;
+    const post = await postService.getPostById(Number(postId));
+
+    if (!post) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Post not found');
+    }
+
+    res.status(httpStatus.OK).send(post);
+  } catch (e) {
+    res.status(e.statusCode).send(e.message);
+
+    //  throw new ApiError(e.statusCode, e.message);
+  }
+};
+// delete post
+const deletePost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const postId = req.params.id;
+
+    // get the post by id
+    const postToDelete = await postService.getPostById(Number(postId));
+    console.log(postToDelete);
+    if (!postToDelete) {
+      throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
+    }
+
+    // delete the associated files first
+    await postService.deleteFiles(Number(postId));
+
+    // delete the post itself
+    await postService.deletePost(Number(postId));
+    res.status(httpStatus.OK).send('deletedPost');
+    // return new ApiResponse(httpStatus.OK, {}, 'Post deleted successfully!');
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+
+export { createPost, getPosts, getPostById, deletePost };

@@ -5,11 +5,16 @@ import { Endpoints } from './config/endpoints';
 import { errorHandler } from './errors';
 import { mainRouter } from './routes/main.routes';
 import { Logger } from './logger';
+import path from 'path';
 
 const { PORT } = config;
 const { API } = Endpoints;
 
 const app: Application = express();
+
+// app.use('/static', express.static('public/assets/uploads'));
+// app.use(express.static(`${__dirname}../public/assets/uploads`));
+app.use(express.static(path.join(__dirname, '../public/assets/uploads')));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

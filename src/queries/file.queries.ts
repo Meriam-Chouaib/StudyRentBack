@@ -11,3 +11,10 @@ export const createFiles = async (file: Omit<Files, 'id'>): Promise<Files> => {
 
   return fileCreated;
 };
+export const deleteFilesByPostId = async (postId: number): Promise<void> => {
+  await db.files.deleteMany({
+    where: {
+      postId: postId,
+    },
+  });
+};

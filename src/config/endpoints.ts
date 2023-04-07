@@ -10,6 +10,7 @@ export const Endpoints = {
   post: {
     ROOT: '/posts',
     CREATE: '/create',
+    SINGLE: '/:id',
   },
   user: {
     ALL: '/users',

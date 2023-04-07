@@ -47,7 +47,7 @@ model Appartement{
   surface       Int
   price         Decimal
   nbRoommate    Int 
-  region        String
+
   city          String
   state         String
   country       String
@@ -65,13 +65,13 @@ model Post {
   poster        User     @relation(fields: [posterId], references: [id])
   //appartement    Appartement @relation(fields: [appartementId], references: [id])
   files         Files[]
-  nbRooms       Int @default(0)
+  nb_rooms       Int @default(0)
   surface       Int @default(0)
   price         Decimal @default(0)
-  nbRoommate    Int @default(0)
-  region        String @default("")
+  nb_roommate    Int @default(0)
+ 
   city          String @default("")
   state         String @default("")
-  country       String   @default("")
   isLocated     Boolean @default(false)
+  postal_code   Int @default(0)
 }
