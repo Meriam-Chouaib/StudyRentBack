@@ -47,3 +47,13 @@ export const getPostById = async (postId: number): Promise<Post | null> => {
     console.log(err);
   }
 };
+// delete post by id
+export const deletePost = async (postId: number): Promise<void> => {
+  try {
+    await db.post.delete({
+      where: { id: postId },
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};

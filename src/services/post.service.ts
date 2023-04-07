@@ -47,16 +47,40 @@ const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
 };
 
 // get post by id
-const getPostById = async (postId: number): Promise<Post> => {
+const getPostById = async (postId: number): Promise<ApiResponse> => {
   try {
     const post: Post | null = await postQueries.getPostById(postId);
     if (!post) {
       throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
     }
-    return post;
+
+    return new ApiResponse(httpStatus.OK, post, `Post with id ${postId}`);
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
 };
+// delete post
+const deletePost = async (postId: number): Promise<void> => {
+  try {
+    // first, get the post by its ID to ensure it exists
+    const postToDelete = await postQueries.getPostById(postId);
 
-export { createPost, getPosts, getPostById };
+    if (!postToDelete) {
+      throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
+    }
+
+    // delete any associated files first
+    await postQueries.deletePost(postId);
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+// delete files associated with post
+const deleteFiles = async (postId: number): Promise<void> => {
+  try {
+    await fileQueries.deleteFilesByPostId(postId);
+  } catch (e) {
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, e.message);
+  }
+};
+export { createPost, getPosts, getPostById, deletePost, deleteFiles };

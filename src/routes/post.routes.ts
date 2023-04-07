@@ -38,17 +38,28 @@ postRouter.post(
  */
 
 postRouter.get(Endpoints.ROOT, PostController.getPosts);
+/**
+ * @swagger
+ * /:
+ *   posts:
+ *     summary: Get list of posts
+ *     description: Get list of posts
+ *       200:
+ *         description: list of posts
+ */
+
+postRouter.get(Endpoints.post.SINGLE, PostController.getPostById);
 
 /**
  * @swagger
  * /:
  *   post:
- *     summary: Get post
- *     description: Get single post
+ *     summary: delete post
+ *     description: delete post
  *       200:
- *         description: get post by id
+ *         description: post deleted successfully!
  */
 
-postRouter.get(Endpoints.post.SINGLE, PostController.getPostById);
+postRouter.delete(Endpoints.post.SINGLE, PostController.deletePost);
 
 export default postRouter;
