@@ -20,15 +20,14 @@ import ApiResponse from '../utils/ApiResponse';
 const createPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const filesData = req.files as Express.Multer.File[];
-    const data: Post = req.body as Post;
+    const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
+    const { value, error } = postSchema.validate(data);
 
-    const { value, error } = postSchema.validate(req.body);
-
-    const post = await postService.createPost(value, filesData as unknown as Files[]);
+    const post = await postService.createPost(data, filesData);
     res.status(httpStatus.OK).send(post);
     // throw new ApiResponse(httpStatus.OK, post, 'success');
   } catch (e) {
-    throw new ApiError(e.statusCode, e.message);
+    next(e);
   }
 };
 
@@ -97,5 +96,19 @@ const deletePost = async (req: Request, res: Response, next: NextFunction): Prom
     throw new ApiError(e.statusCode, e.message);
   }
 };
+// edit post
+const editPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const postId = Number(req.params.id);
+    const filesData = req.files as Express.Multer.File[];
+    const data: Post = req.body as Post;
 
-export { createPost, getPosts, getPostById, deletePost };
+    const { value, error } = postSchema.validate(req.body);
+
+    const updatedPost = await postService.editPost(postId, value, filesData as unknown as Files[]);
+    res.status(httpStatus.OK).send(updatedPost);
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+export { createPost, getPosts, getPostById, deletePost, editPost };

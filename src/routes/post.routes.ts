@@ -23,7 +23,7 @@ postRouter.post(
   Endpoints.post.CREATE,
   upload.array('files'),
 
-  postMiddleware,
+  // postMiddleware,
   PostController.createPost,
 );
 
@@ -61,5 +61,6 @@ postRouter.get(Endpoints.post.SINGLE, PostController.getPostById);
  */
 
 postRouter.delete(Endpoints.post.SINGLE, PostController.deletePost);
+postRouter.patch(Endpoints.post.SINGLE, PostController.editPost);
 
 export default postRouter;

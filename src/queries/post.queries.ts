@@ -1,16 +1,55 @@
-import { Post, Prisma } from '@prisma/client';
+import { createFiles } from './file.queries';
+import { Files, Post, Prisma, User } from '@prisma/client';
 import { GetPostsParams } from '../types/post/post.types';
 import { getDbInstance } from '../database';
+import * as userQueries from '../queries/user.queries';
 
 //-----------connection to the database
 const db = getDbInstance();
 
 // create post
 
-export const createPost = async (post: Post): Promise<Post> => {
+export const createPost = async (post: Post, filesData: Express.Multer.File[]): Promise<Post> => {
   try {
+    // const poster = db.user.findFirst({
+    //   where: { id: post.posterId },
+    // });
     return await db.post.create({
-      data: { ...post },
+      data: {
+        description: post.description,
+        title: post.title,
+        city: post.city,
+        nb_roommate: post.nb_roommate,
+        nb_rooms: post.nb_rooms,
+        isLocated: false,
+        likes: 0,
+        postal_code: post.postal_code,
+        // poster: null, // TODO: get the poster from database in service scope.
+        // poster: (await userQueries.getUserById(post.posterId)) as User,
+        // poster: {
+        //   connect: { id: Number(post.posterId) },
+        // },
+        //poster: poster,
+        price: post.price,
+        state: post.state,
+        posterId: post.posterId,
+        surface: Number(post.surface),
+        datePost: new Date(),
+        // files: post, //TODO: get files names from muler and instanciate class File for every file.
+        files: {
+          create: filesData.map((file: Express.Multer.File) => {
+            return {
+              id: undefined,
+              postId: undefined,
+              filename: file.filename,
+              path: file.path,
+            };
+          }),
+        },
+      },
+      include: {
+        files: true,
+      },
     });
   } catch (err) {
     console.log(err);
@@ -53,6 +92,25 @@ export const deletePost = async (postId: number): Promise<void> => {
     await db.post.delete({
       where: { id: postId },
     });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// edit post by id
+export const editPost = async (
+  postId: number,
+  post: Prisma.PostUpdateInput,
+): Promise<Post | null> => {
+  try {
+    const updatedPost: Post | null = await db.post.update({
+      where: { id: postId },
+      data: post,
+      include: {
+        files: true,
+      },
+    });
+    return updatedPost;
   } catch (err) {
     console.log(err);
   }

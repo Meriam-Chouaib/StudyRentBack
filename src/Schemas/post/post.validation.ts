@@ -3,7 +3,6 @@ import Joi from 'joi';
 //export const postSchema: Record<keyof Post, any> = Joi.object().keys({
 export const postSchema = Joi.object().keys({
   id: Joi.number().optional().empty(),
-  postal_code: Joi.number().required(),
 
   datePost: Joi.date().default(() => new Date()),
   title: Joi.string().required().min(6).max(30),
@@ -17,4 +16,5 @@ export const postSchema = Joi.object().keys({
   price: Joi.number().required(),
   posterId: Joi.number().required(),
   isLocated: Joi.boolean().optional,
+  postal_code: Joi.string().optional,
 });
