@@ -13,7 +13,6 @@ import { log } from 'console';
 // create post
 const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
   try {
-    console.log('hhhhhhhhhhhh', fileData);
     const postImages: Files[] = fileData.map((file: Express.Multer.File) => {
       return {
         id: undefined,
@@ -40,24 +39,6 @@ const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
       fileData,
     );
     return post;
-
-    // const fileCreated = await Promise.all(
-    //   fileData?.map((file: Files) => {
-    //     const files = fileQueries.createFiles({
-    //       filename: file.filename,
-    //       postId: post.id,
-    //     });
-    //     return files;
-    //   }),
-    // );
-    // const result = {
-    //   ...post,
-    //   files: fileCreated,
-    // };
-
-    // if (post && fileCreated) {
-    //   return result;
-    // }
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
