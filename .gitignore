@@ -50,3 +50,6 @@ Thumbs.db
 
 # pulic folder
 public/
+
+#migrations prisma
+prisma/migrations

@@ -1,36 +1,44 @@
 import { Files, Post } from '@prisma/client';
+// queries
 import * as postQueries from '../queries/post.queries';
+import * as userQueries from '../queries/user.queries';
+import * as fileQueries from '../queries/file.queries';
 import ApiError from '../errors/ApiError';
 import httpStatus from 'http-status';
-import * as fileQueries from '../queries/file.queries';
+
 import ApiResponse from '../utils/ApiResponse';
 import { GetPostsParams } from '../types/post/post.types';
+import { log } from 'console';
 
 // create post
-const createPost = async (data: Post, fileData: Files[]) => {
+const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
   try {
-    const post = await postQueries.createPost({
-      nb_roommate: Number(data.nb_roommate),
-      postal_code: Number(data.postal_code),
-      ...data,
+    const postImages: Files[] = fileData.map((file: Express.Multer.File) => {
+      return {
+        id: undefined,
+        postId: undefined,
+        filename: file.filename,
+        path: file.path,
+      };
     });
-    const fileCreated = await Promise.all(
-      fileData?.map((file: Files) => {
-        const files = fileQueries.createFiles({
-          filename: file.filename,
-          postId: post.id,
-        });
-        return files;
-      }),
-    );
-    const result = {
-      ...post,
-      files: fileCreated,
+
+    // get the poster
+    const posterPost = await userQueries.getUserById(data.posterId);
+
+    const dataWithFiles = {
+      ...data,
+      files: postImages,
     };
 
-    if (post && fileCreated) {
-      return result;
-    }
+    const post = await postQueries.createPost(
+      {
+        nb_roommate: Number(data.nb_roommate),
+        // poster: posterPost,
+        ...dataWithFiles,
+      },
+      fileData,
+    );
+    return post;
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
@@ -83,4 +91,38 @@ const deleteFiles = async (postId: number): Promise<void> => {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, e.message);
   }
 };
-export { createPost, getPosts, getPostById, deletePost, deleteFiles };
+// edit post
+const editPost = async (postId: number, data: Post, fileData: Files[]) => {
+  //   try {
+  //     const postToUpdate = await postQueries.getPostById(postId);
+  //     if (!postToUpdate) {
+  //       throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
+  //     }
+  //     // update the post's data
+  //     const updatedPost = await postQueries.editPost(postId, {
+  //       nb_roommate: Number(data.nb_roommate),
+  //       // postal_code: Number(data.postal_code),
+  //       ...data,
+  //     });
+  //     // delete files associate to that post
+  //     await deleteFiles(postId);
+  //     const fileCreated = await Promise.all(
+  //       fileData?.map((file: Files) => {
+  //         const files = fileQueries.createFiles({
+  //           filename: file.filename,
+  //           postId: postId,
+  //         });
+  //         return files;
+  //       }),
+  //     );
+  //     // return the updated post with its associated files
+  //     const result = {
+  //       ...updatedPost,
+  //       files: fileCreated,
+  //     };
+  //     return result;
+  //   } catch (e) {
+  //     throw new ApiError(e.statusCode, e.message);
+  //   }
+};
+export { createPost, getPosts, getPostById, deletePost, deleteFiles, editPost };

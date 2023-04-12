@@ -34,7 +34,7 @@ model           Files{
   id            Int @id @default(autoincrement())
 
   filename      String  
-
+  path String 
   postId        Int   
   //appartementId Int 
   //appartement Appartement @relation(fields:[appartementId], references: [id])
@@ -65,6 +65,7 @@ model Post {
   poster        User     @relation(fields: [posterId], references: [id])
   //appartement    Appartement @relation(fields: [appartementId], references: [id])
   files         Files[]
+  //images         Files[]
   nb_rooms       Int @default(0)
   surface       Int @default(0)
   price         Decimal @default(0)
@@ -73,5 +74,5 @@ model Post {
   city          String @default("")
   state         String @default("")
   isLocated     Boolean @default(false)
-  postal_code   Int @default(0)
+  postal_code   String @default("")
 }
