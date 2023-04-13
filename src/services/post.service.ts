@@ -25,15 +25,17 @@ const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
 
     const dataWithFiles = {
       ...data,
-
+      nb_rooms: Number(data.nb_rooms),
+      nb_roommate: Number(data.nb_roommate),
+      surface: Number(data.surface),
+      posterId: Number(data.posterId),
+      poster: userQueries.getUserById(Number(data.posterId)),
       files: postImages,
     };
     console.log('dataWithFiles', dataWithFiles);
 
     const post = await postQueries.createPost(
       {
-        nb_roommate: Number(data.nb_roommate),
-
         ...dataWithFiles,
       },
       fileData,

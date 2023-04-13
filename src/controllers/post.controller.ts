@@ -19,17 +19,22 @@ import { getTokenFromHeaders } from '../utils';
 const createPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const filesData = req.files as Express.Multer.File[];
-    console.log(req.body.userId);
+    //    console.log(req.body.userId);
 
-    const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
-    data.posterId = req.body.userId;
-    const { value, error } = postSchema.validate(data);
+    // const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
+    const data: Post = req.body;
+    // data.posterId = req.body.userId;
+    // const { value, error } = postSchema.validate(data);
+
+    console.log(req.body);
 
     const post = await postService.createPost(data, filesData);
     res.status(httpStatus.OK).send(post);
     // throw new ApiResponse(httpStatus.OK, post, 'success');
   } catch (e) {
-    next(e);
+    console.log(e);
+
+    // next(e);
   }
 };
 
@@ -149,17 +154,16 @@ const editPost = async (req: Request, res: Response, next: NextFunction): Promis
       isLocated: undefined,
       postal_code: req.body.postal_code,
     };
-    console.log('22222222222', data);
 
     const { value, error } = postSchema.validate(data);
     console.log('postId:', postId);
     console.log('data:', data);
     console.log('filesData:', filesData);
 
-    const updatedPost = await postService.editPost(postId, data, filesData);
-    console.log('updatedPost', updatedPost);
+    // const updatedPost = await postService.editPost(postId, data, filesData);
+    // console.log('updatedPost', updatedPost);
 
-    res.status(httpStatus.OK).send(updatedPost);
+    // res.status(httpStatus.OK).send(updatedPost);
   } catch (e) {
     console.log(e);
 

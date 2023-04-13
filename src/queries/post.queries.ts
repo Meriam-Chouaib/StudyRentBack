@@ -25,7 +25,7 @@ export const createPost = async (post: Post, filesData: Express.Multer.File[]): 
         price: post.price,
         state: post.state,
         posterId: post.posterId,
-        surface: Number(post.surface),
+        surface: post.surface,
         datePost: new Date(),
         files: {
           create: filesData.map((file: Express.Multer.File) => {
@@ -120,6 +120,9 @@ export const editPost = async (
   filesData: Express.Multer.File[],
 ): Promise<Post> => {
   try {
+    console.log('filesData', filesData);
+    console.log('post', post);
+
     return await db.post.update({
       where: { id: postId },
       data: {
