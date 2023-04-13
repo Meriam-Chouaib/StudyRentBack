@@ -4,11 +4,10 @@ import { validate } from '../middlewares/validate.middleware';
 import { PostController } from '../controllers';
 
 import { postSchema } from '../Schemas/post';
-import { postMiddleware } from '..//middlewares/post.validate.middelware';
+import { postMiddleware, MiddlewarePost } from '..//middlewares/post.validate.middelware';
 import upload from '../middlewares/multer';
 
 const postRouter = express.Router();
-
 /**
  * @swagger
  * /create:
@@ -22,7 +21,7 @@ const postRouter = express.Router();
 postRouter.post(
   Endpoints.post.CREATE,
   upload.array('files'),
-
+  MiddlewarePost,
   // postMiddleware,
   PostController.createPost,
 );
@@ -38,6 +37,18 @@ postRouter.post(
  */
 
 postRouter.get(Endpoints.ROOT, PostController.getPosts);
+
+/**
+ * @swagger
+ * /:
+ *   posts:
+ *     summary: Get list of posts by owner
+ *     description: Get list of posts by owner
+ *       200:
+ *         description: list of posts by owner
+ */
+
+postRouter.get(Endpoints.post.LIST, PostController.getPostsByOwner);
 /**
  * @swagger
  * /:

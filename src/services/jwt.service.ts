@@ -8,4 +8,13 @@ const signToken = (id: number) => {
   return token;
 };
 
-export { signToken };
+const decodeToken = (token: string) => {
+  try {
+    const decodedToken = jwt.decode(token);
+    return decodedToken;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+export { signToken, decodeToken };

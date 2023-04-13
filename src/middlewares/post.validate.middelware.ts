@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { postSchema } from '../Schemas/post/post.validation';
-
+import { getTokenFromHeaders } from '../utils';
+import { decodeToken } from '../services/jwt.service';
 export const postMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const body = req.body;
 
@@ -14,4 +15,11 @@ export const postMiddleware = (req: Request, res: Response, next: NextFunction) 
   } else {
     next();
   }
+};
+
+export const MiddlewarePost = (req: Request, res: Response, next: NextFunction) => {
+  const token = getTokenFromHeaders(req.headers);
+  const id = decodeToken(token);
+  req.body.userId = id;
+  next();
 };

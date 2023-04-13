@@ -5,4 +5,5 @@ export type GetPostsParams = {
   page: number;
   rowsPerPage: number;
   filter?: Prisma.PostWhereInput;
+  idOwner?: number;
 };

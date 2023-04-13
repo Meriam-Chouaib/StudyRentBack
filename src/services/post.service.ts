@@ -8,11 +8,12 @@ import httpStatus from 'http-status';
 
 import ApiResponse from '../utils/ApiResponse';
 import { GetPostsParams } from '../types/post/post.types';
-import { log } from 'console';
+import { decodeToken } from './jwt.service';
 
 // create post
 const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
   try {
+    // images
     const postImages: Files[] = fileData.map((file: Express.Multer.File) => {
       return {
         id: undefined,
@@ -22,18 +23,16 @@ const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
       };
     });
 
-    // get the poster
-    const posterPost = await userQueries.getUserById(data.posterId);
-
     const dataWithFiles = {
       ...data,
+
       files: postImages,
     };
+    console.log('dataWithFiles', dataWithFiles);
 
     const post = await postQueries.createPost(
       {
         nb_roommate: Number(data.nb_roommate),
-        // poster: posterPost,
         ...dataWithFiles,
       },
       fileData,
@@ -49,6 +48,18 @@ const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
   try {
     const result = await postQueries.getPosts({ page, rowsPerPage, filter });
     return new ApiResponse(httpStatus.OK, result, 'List of posts');
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+const getPostsByOwner = async ({ page, rowsPerPage, filter, idOwner }: GetPostsParams) => {
+  try {
+    const result = await postQueries.getPostsByOwner({ page, rowsPerPage, filter, idOwner });
+    return new ApiResponse(
+      httpStatus.OK,
+      result,
+      'List of posts for the owner with id: ' + idOwner,
+    );
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
@@ -125,4 +136,4 @@ const editPost = async (postId: number, data: Post, fileData: Files[]) => {
   //     throw new ApiError(e.statusCode, e.message);
   //   }
 };
-export { createPost, getPosts, getPostById, deletePost, deleteFiles, editPost };
+export { createPost, getPosts, getPostById, deletePost, deleteFiles, editPost, getPostsByOwner };

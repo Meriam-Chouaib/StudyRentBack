@@ -11,9 +11,6 @@ const db = getDbInstance();
 
 export const createPost = async (post: Post, filesData: Express.Multer.File[]): Promise<Post> => {
   try {
-    // const poster = db.user.findFirst({
-    //   where: { id: post.posterId },
-    // });
     return await db.post.create({
       data: {
         description: post.description,
@@ -24,18 +21,12 @@ export const createPost = async (post: Post, filesData: Express.Multer.File[]): 
         isLocated: false,
         likes: 0,
         postal_code: post.postal_code,
-        // poster: null, // TODO: get the poster from database in service scope.
-        // poster: (await userQueries.getUserById(post.posterId)) as User,
-        // poster: {
-        //   connect: { id: Number(post.posterId) },
-        // },
-        //poster: poster,
+
         price: post.price,
         state: post.state,
         posterId: post.posterId,
         surface: Number(post.surface),
         datePost: new Date(),
-        // files: post, //TODO: get files names from muler and instanciate class File for every file.
         files: {
           create: filesData.map((file: Express.Multer.File) => {
             return {
@@ -72,6 +63,31 @@ export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): P
     console.log(err);
   }
 };
+
+// get posts by owner
+
+export const getPostsByOwner = async ({
+  page,
+  rowsPerPage,
+  filter,
+  idOwner,
+}: GetPostsParams): Promise<Post[]> => {
+  try {
+    return await db.post.findMany({
+      skip: (page - 1) * rowsPerPage,
+      take: rowsPerPage,
+      where: {
+        posterId: idOwner,
+      },
+      include: {
+        files: true,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 // get post by id
 export const getPostById = async (postId: number): Promise<Post | null> => {
   try {

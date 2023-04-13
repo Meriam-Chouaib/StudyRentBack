@@ -2,11 +2,10 @@ import { error } from './../logger/logger';
 import { Files, Post, Prisma } from '@prisma/client';
 import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
-import { Logger } from '../logger';
 import * as postService from '../services/post.service';
 import ApiError from '../errors/ApiError';
 import { postSchema } from '../Schemas/post/post.validation';
-import ApiResponse from '../utils/ApiResponse';
+import { getTokenFromHeaders } from '../utils';
 //------------------------- create post --------------------------------------
 /**
  * create post
@@ -20,7 +19,10 @@ import ApiResponse from '../utils/ApiResponse';
 const createPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const filesData = req.files as Express.Multer.File[];
+    console.log(req.body.userId);
+
     const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
+    data.posterId = req.body.userId;
     const { value, error } = postSchema.validate(data);
 
     const post = await postService.createPost(data, filesData);
@@ -47,6 +49,34 @@ const getPosts = async (req: Request, res: Response, next: NextFunction): Promis
     res
       .status(200)
       .send(await postService.getPosts({ page: page, filter: filter, rowsPerPage: rowsPerPage }));
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+
+// get posts by owner
+
+const getPostsByOwner = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const rowsPerPage = Number(req.query.rowsPerPage) || 9;
+    const title = req.query.title as string;
+    const idOwner = Number(req.query.idOwner);
+
+    const filter: Prisma.PostWhereInput = {
+      title: {
+        contains: title,
+      },
+    };
+
+    res.status(200).send(
+      await postService.getPostsByOwner({
+        page: page,
+        filter: filter,
+        rowsPerPage: rowsPerPage,
+        idOwner: idOwner,
+      }),
+    );
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
@@ -111,4 +141,4 @@ const editPost = async (req: Request, res: Response, next: NextFunction): Promis
     throw new ApiError(e.statusCode, e.message);
   }
 };
-export { createPost, getPosts, getPostById, deletePost, editPost };
+export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner };
