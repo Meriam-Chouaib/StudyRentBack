@@ -19,10 +19,10 @@ import { getTokenFromHeaders } from '../utils';
 const createPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const filesData = req.files as Express.Multer.File[];
-    console.log(req.body.userId);
+    console.log('req bodyyyy', req.body);
 
     const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
-    data.posterId = req.body.userId;
+
     const { value, error } = postSchema.validate(data);
 
     const post = await postService.createPost(data, filesData);
