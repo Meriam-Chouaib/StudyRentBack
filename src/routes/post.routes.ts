@@ -21,7 +21,7 @@ const postRouter = express.Router();
 postRouter.post(
   Endpoints.post.CREATE,
   upload.array('files'),
-  MiddlewarePost,
+  // MiddlewarePost,
   // postMiddleware,
   PostController.createPost,
 );

@@ -123,7 +123,8 @@ const deletePost = async (req: Request, res: Response, next: NextFunction): Prom
     res.status(httpStatus.OK).send('deletedPost');
     // return new ApiResponse(httpStatus.OK, {}, 'Post deleted successfully!');
   } catch (e) {
-    throw new ApiError(e.statusCode, e.message);
+    res.status(e.status).send(e.message);
+    //next(e.);
   }
 };
 // edit post
@@ -131,14 +132,38 @@ const editPost = async (req: Request, res: Response, next: NextFunction): Promis
   try {
     const postId = Number(req.params.id);
     const filesData = req.files as Express.Multer.File[];
-    const data: Post = req.body as Post;
+    // const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
+    const data: Post = {
+      city: req.body.city,
+      datePost: req.body.datePost,
+      id: undefined,
+      title: req.body.title,
+      description: req.body.description,
+      posterId: req.body.posterId,
+      likes: undefined,
+      nb_rooms: req.body.nb_rooms,
+      surface: req.body.surface,
+      price: req.body.price,
+      nb_roommate: req.body.nb_roommate,
+      state: req.body.state,
+      isLocated: undefined,
+      postal_code: req.body.postal_code,
+    };
+    console.log('22222222222', data);
 
-    const { value, error } = postSchema.validate(req.body);
+    const { value, error } = postSchema.validate(data);
+    console.log('postId:', postId);
+    console.log('data:', data);
+    console.log('filesData:', filesData);
 
-    const updatedPost = await postService.editPost(postId, value, filesData as unknown as Files[]);
+    const updatedPost = await postService.editPost(postId, data, filesData);
+    console.log('updatedPost', updatedPost);
+
     res.status(httpStatus.OK).send(updatedPost);
   } catch (e) {
-    throw new ApiError(e.statusCode, e.message);
+    console.log(e);
+
+    // res.status(e.status).send(e.message);
   }
 };
 export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner };

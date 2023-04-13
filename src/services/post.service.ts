@@ -33,6 +33,7 @@ const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
     const post = await postQueries.createPost(
       {
         nb_roommate: Number(data.nb_roommate),
+
         ...dataWithFiles,
       },
       fileData,
@@ -103,37 +104,37 @@ const deleteFiles = async (postId: number): Promise<void> => {
   }
 };
 // edit post
-const editPost = async (postId: number, data: Post, fileData: Files[]) => {
-  //   try {
-  //     const postToUpdate = await postQueries.getPostById(postId);
-  //     if (!postToUpdate) {
-  //       throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
-  //     }
-  //     // update the post's data
-  //     const updatedPost = await postQueries.editPost(postId, {
-  //       nb_roommate: Number(data.nb_roommate),
-  //       // postal_code: Number(data.postal_code),
-  //       ...data,
-  //     });
-  //     // delete files associate to that post
-  //     await deleteFiles(postId);
-  //     const fileCreated = await Promise.all(
-  //       fileData?.map((file: Files) => {
-  //         const files = fileQueries.createFiles({
-  //           filename: file.filename,
-  //           postId: postId,
-  //         });
-  //         return files;
-  //       }),
-  //     );
-  //     // return the updated post with its associated files
-  //     const result = {
-  //       ...updatedPost,
-  //       files: fileCreated,
-  //     };
-  //     return result;
-  //   } catch (e) {
-  //     throw new ApiError(e.statusCode, e.message);
-  //   }
+const editPost = async (postId: number, data: Post, fileData: Express.Multer.File[]) => {
+  try {
+    const postToUpdate = await postQueries.getPostById(postId);
+    if (!postToUpdate) {
+      throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
+    }
+
+    // get the images of this post
+    const postImages: Files[] = fileData.map((file: Express.Multer.File) => {
+      return {
+        id: undefined,
+        postId: undefined,
+        filename: file.filename,
+        path: file.path,
+      };
+    });
+
+    // get post data with files
+    const dataWithFiles = {
+      ...data,
+
+      files: postImages,
+    };
+    // update the post's data
+    const updatedPost = await postQueries.editPost(postId, dataWithFiles, fileData);
+    // delete files associate to that post
+    await deleteFiles(postId);
+
+    return updatedPost;
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
+  }
 };
 export { createPost, getPosts, getPostById, deletePost, deleteFiles, editPost, getPostsByOwner };
