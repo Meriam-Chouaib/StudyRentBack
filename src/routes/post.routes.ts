@@ -21,7 +21,7 @@ const postRouter = express.Router();
 postRouter.post(
   Endpoints.post.CREATE,
   upload.array('files'),
-  MiddlewarePost,
+  // MiddlewarePost,
   // postMiddleware,
   PostController.createPost,
 );
@@ -72,6 +72,6 @@ postRouter.get(Endpoints.post.SINGLE, PostController.getPostById);
  */
 
 postRouter.delete(Endpoints.post.SINGLE, PostController.deletePost);
-postRouter.patch(Endpoints.post.SINGLE, PostController.editPost);
+postRouter.patch(Endpoints.post.SINGLE, upload.array('files'), PostController.editPost);
 
 export default postRouter;

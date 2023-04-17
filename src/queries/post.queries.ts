@@ -21,7 +21,6 @@ export const createPost = async (post: Post, filesData: Express.Multer.File[]): 
         isLocated: false,
         likes: 0,
         postal_code: post.postal_code,
-
         price: post.price,
         state: post.state,
         posterId: post.posterId,
@@ -116,12 +115,34 @@ export const deletePost = async (postId: number): Promise<void> => {
 // edit post by id
 export const editPost = async (
   postId: number,
-  post: Prisma.PostUpdateInput,
+  post: Post,
+  filesData: Express.Multer.File[],
 ): Promise<Post | null> => {
   try {
     const updatedPost: Post | null = await db.post.update({
       where: { id: postId },
-      data: post,
+
+      data: {
+        description: post.description,
+        title: post.title,
+        city: post.city,
+        nb_roommate: post.nb_roommate,
+        nb_rooms: post.nb_rooms,
+        isLocated: false,
+        likes: 0,
+
+        datePost: new Date(),
+        files: {
+          create: filesData.map((file: Express.Multer.File) => {
+            return {
+              id: undefined,
+              postId: undefined,
+              filename: file.filename,
+              path: file.path,
+            };
+          }),
+        },
+      },
       include: {
         files: true,
       },

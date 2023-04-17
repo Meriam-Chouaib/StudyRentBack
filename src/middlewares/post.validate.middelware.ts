@@ -21,5 +21,7 @@ export const MiddlewarePost = (req: Request, res: Response, next: NextFunction) 
   const token = getTokenFromHeaders(req.headers);
   const id = decodeToken(token);
   req.body.userId = id;
-  next();
+  console.log(req.body);
+
+  //next();
 };

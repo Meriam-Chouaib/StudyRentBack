@@ -129,16 +129,22 @@ const deletePost = async (req: Request, res: Response, next: NextFunction): Prom
 // edit post
 const editPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    console.log('111111111111111111111111', req.files);
+    console.log('222222222222222222222222', req.body);
+
     const postId = Number(req.params.id);
     const filesData = req.files as Express.Multer.File[];
-    const data: Post = req.body as Post;
+    const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
 
     const { value, error } = postSchema.validate(req.body);
 
-    const updatedPost = await postService.editPost(postId, value, filesData as unknown as Files[]);
+    const updatedPost = await postService.editPost(postId, data, filesData);
+
     res.status(httpStatus.OK).send(updatedPost);
   } catch (e) {
-    throw new ApiError(e.statusCode, e.message);
+    console.log(e);
+
+    // throw new ApiError(e.statusCode, e.message);
   }
 };
 export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner };
