@@ -128,6 +128,9 @@ export const editPost = async (
         city: post.city,
         nb_roommate: post.nb_roommate,
         nb_rooms: post.nb_rooms,
+        price: post.price,
+        state: post.state,
+        postal_code: post.postal_code.toString(),
         isLocated: false,
         likes: 0,
 
