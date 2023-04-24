@@ -1,11 +1,13 @@
 import { error } from './../logger/logger';
 import { Files, Post, Prisma } from '@prisma/client';
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import * as postService from '../services/post.service';
 import ApiError from '../errors/ApiError';
 import { postSchema } from '../Schemas/post/post.validation';
 import { getTokenFromHeaders } from '../utils';
+import { Request } from '../types/types';
+
 //------------------------- create post --------------------------------------
 /**
  * create post
@@ -24,10 +26,9 @@ const createPost = async (req: Request, res: Response, next: NextFunction): Prom
     const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
 
     const { value, error } = postSchema.validate(data);
-
+    data.posterId = req.userId;
     const post = await postService.createPost(data, filesData);
     res.status(httpStatus.OK).send(post);
-    // throw new ApiResponse(httpStatus.OK, post, 'success');
   } catch (e) {
     next(e);
   }
@@ -61,7 +62,9 @@ const getPostsByOwner = async (req: Request, res: Response, next: NextFunction):
     const page = Number(req.query.page) || 1;
     const rowsPerPage = Number(req.query.rowsPerPage) || 9;
     const title = req.query.title as string;
-    const idOwner = Number(req.query.idOwner);
+    console.log('id useeeeeeeeeeeeeeeeeeer', req.userId);
+
+    const idOwner = Number(req.userId);
 
     const filter: Prisma.PostWhereInput = {
       title: {

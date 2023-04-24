@@ -50,7 +50,7 @@ postRouter.get(Endpoints.ROOT, PostController.getPosts);
  *         description: list of posts by owner
  */
 
-postRouter.get(Endpoints.post.LIST, PostController.getPostsByOwner);
+postRouter.get(Endpoints.post.LIST, verifyToken, PostController.getPostsByOwner);
 /**
  * @swagger
  * /:

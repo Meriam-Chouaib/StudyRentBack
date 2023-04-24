@@ -1,13 +1,8 @@
 import { Response, NextFunction } from 'express';
 import { getUserById } from '../queries/user.queries';
+import { Request } from '../types/types';
 
-import { Request as ExpressRequest } from 'express';
-
-interface Request extends ExpressRequest {
-  userId: number;
-}
 // verify role user
-
 export const isRole =
   (roles: string[]) => async (req: Request, res: Response, next: NextFunction) => {
     try {
