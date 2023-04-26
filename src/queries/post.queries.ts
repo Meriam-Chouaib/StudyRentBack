@@ -21,7 +21,6 @@ export const createPost = async (post: Post, filesData: Express.Multer.File[]): 
         isLocated: false,
         likes: 0,
         postal_code: post.postal_code,
-
         price: post.price,
         state: post.state,
         posterId: post.posterId,

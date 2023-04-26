@@ -4,8 +4,9 @@ import { validate } from '../middlewares/validate.middleware';
 import { PostController } from '../controllers';
 
 import { postSchema } from '../Schemas/post';
-import { postMiddleware, MiddlewarePost } from '..//middlewares/post.validate.middelware';
 import upload from '../middlewares/multer';
+import { verifyToken } from '../middlewares/VerifyToken';
+import { isRole } from '../middlewares/AuthoriseRole';
 import { paginationSchema } from '../Schemas/pagination/Pagination.validation';
 import { validateParams } from '../middlewares/pagination.validate';
 
@@ -22,9 +23,10 @@ const postRouter = express.Router();
 
 postRouter.post(
   Endpoints.post.CREATE,
+  validate(postSchema.postSchema),
   upload.array('files'),
-  MiddlewarePost,
-  // postMiddleware,
+  verifyToken,
+  isRole(['ADMIN', 'OWNER']),
   PostController.createPost,
 );
 
@@ -62,7 +64,7 @@ postRouter.get(Endpoints.ROOT, validateParams(paginationSchema), PostController.
  *         description: list of posts by owner
  */
 
-postRouter.get(Endpoints.post.LIST, PostController.getPostsByOwner);
+postRouter.get(Endpoints.post.LIST, verifyToken, PostController.getPostsByOwner);
 /**
  * @swagger
  * /:

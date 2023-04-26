@@ -7,6 +7,8 @@ import ApiError from '../errors/ApiError';
 import { postSchema } from '../Schemas/post/post.validation';
 import { getTokenFromHeaders } from '../utils';
 import { Filter } from '../types/post/post.types';
+import { Request } from '../types/types';
+
 //------------------------- create post --------------------------------------
 /**
  * create post
@@ -31,7 +33,6 @@ const createPost = async (req: Request, res: Response, next: NextFunction): Prom
 
     const post = await postService.createPost(data, filesData);
     res.status(httpStatus.OK).send(post);
-    // throw new ApiResponse(httpStatus.OK, post, 'success');
   } catch (e) {
     console.log(e);
 
@@ -83,6 +84,7 @@ const getPostsByOwner = async (req: Request, res: Response, next: NextFunction):
     const page = Number(req.query.page) || 1;
     const rowsPerPage = Number(req.query.rowsPerPage) || 9;
     const title = req.query.title as string;
+
     console.log('id useeeeeeeeeeeeeeeeeeer', req.userId);
 
     const idOwner = Number(req.userId);
@@ -154,6 +156,9 @@ const deletePost = async (req: Request, res: Response, next: NextFunction): Prom
 // edit post
 const editPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    console.log('111111111111111111111111', req.files);
+    console.log('222222222222222222222222', req.body);
+
     const postId = Number(req.params.id);
     const filesData = req.files as Express.Multer.File[];
     // const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));

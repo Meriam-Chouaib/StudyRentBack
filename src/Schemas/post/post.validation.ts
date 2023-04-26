@@ -16,5 +16,6 @@ export const postSchema = Joi.object().keys({
   price: Joi.number().required(),
   posterId: Joi.number().required(),
   isLocated: Joi.boolean().optional,
-  postal_code: Joi.string().optional,
+  postal_code: Joi.string().required(),
+  files: Joi.any().required(),
 });
