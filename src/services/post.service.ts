@@ -9,7 +9,6 @@ import httpStatus from 'http-status';
 import ApiResponse from '../utils/ApiResponse';
 import { Filter, GetPostsParams } from '../types/post/post.types';
 import { decodeToken } from './jwt.service';
-import { SplitInterval } from '../utils/splitIntervale';
 
 // create post
 const createPost = async (data: Post, fileData: Express.Multer.File[]) => {

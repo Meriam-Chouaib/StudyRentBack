@@ -1,15 +1,12 @@
 import { error } from './../logger/logger';
 import { Files, Post, Prisma } from '@prisma/client';
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import * as postService from '../services/post.service';
 import ApiError from '../errors/ApiError';
 import { postSchema } from '../Schemas/post/post.validation';
 import { getTokenFromHeaders } from '../utils';
-import { Request } from '../types/types';
-import { SplitInterval } from '../utils/splitIntervale';
 import { Filter } from '../types/post/post.types';
-
 //------------------------- create post --------------------------------------
 /**
  * create post
