@@ -50,9 +50,9 @@ export const createPost = async (post: Post, filesData: Express.Multer.File[]): 
 
 export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): Promise<Post[]> => {
   try {
-    let filters = {};
+    console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeerrrrrrrrrrrrr', filter);
 
-    const { nb_rooms, price, surface, title, city } = filter;
+    let filters = {};
 
     if (page && rowsPerPage) {
       filters = {
@@ -66,14 +66,16 @@ export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): P
     }
 
     if (filter) {
+      const { nb_rooms, price, surface, title, city } = JSON.parse(filter.toString());
+
       filters = {
         ...filters,
         where: {
-          city: { contains: city },
-          title: { contains: title },
-          nb_rooms: { equals: nb_rooms },
-          price: { lte: price[1], gte: price[0] },
-          surface: { lte: surface[1], gte: surface[0] },
+          city: city ? { contains: city } : '',
+          title: title ? { contains: title } : '',
+          nb_rooms: nb_rooms && nb_rooms !== '' ? { equals: Number(nb_rooms) } : true,
+          price: price && price !== '' ? { lte: price[1], gte: price[0] } : true,
+          surface: surface && surface !== '' ? { lte: surface[1], gte: surface[0] } : true,
         },
       };
     }

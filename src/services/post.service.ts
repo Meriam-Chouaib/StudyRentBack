@@ -8,7 +8,6 @@ import httpStatus from 'http-status';
 
 import ApiResponse from '../utils/ApiResponse';
 import { Filter, GetPostsParams } from '../types/post/post.types';
-import { decodeToken } from './jwt.service';
 
 // create post
 const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
@@ -49,16 +48,10 @@ const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
 // _____________________________________________  get posts with filter  ______________________________________________________________________
 const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
   try {
-    const filterData: Filter = JSON.parse(filter.toString());
-
-    if (filter) {
-      const { city, nb_rooms, surface, title, price } = filterData;
-      filter = { ...filter, price, surface, city, nb_rooms, title };
-    }
     const result = await postQueries.getPosts({
       page,
       rowsPerPage,
-      filter: filterData,
+      filter,
     });
 
     return new ApiResponse(httpStatus.OK, result, 'List of posts');

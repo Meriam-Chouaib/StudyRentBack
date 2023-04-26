@@ -8,8 +8,6 @@ export const validateParams =
     const { value, error } = Joi.compile(schema)
       .prefs({ errors: { label: 'key' }, abortEarly: false })
       .validate(req.query);
-
-    console.log('value', value);
     console.log(error);
 
     if (error) {
