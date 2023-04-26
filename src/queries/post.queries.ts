@@ -51,14 +51,34 @@ export const createPost = async (post: Post, filesData: Express.Multer.File[]): 
 
 export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): Promise<Post[]> => {
   try {
-    return await db.post.findMany({
-      skip: (page - 1) * rowsPerPage,
-      take: rowsPerPage,
-      where: filter,
-      include: {
-        files: true,
-      },
-    });
+    let filters = {};
+
+    const { nb_rooms, price, surface, title, city } = filter;
+
+    if (page && rowsPerPage) {
+      filters = {
+        ...filters,
+        skip: (page - 1) * rowsPerPage,
+        take: rowsPerPage,
+        include: {
+          files: true,
+        },
+      };
+    }
+
+    if (filter) {
+      filters = {
+        ...filters,
+        where: {
+          city: { contains: city },
+          title: { contains: title },
+          nb_rooms: { equals: nb_rooms },
+          price: { lte: price[1], gte: price[0] },
+          surface: { lte: surface[1], gte: surface[0] },
+        },
+      };
+    }
+    return await db.post.findMany(filters);
   } catch (err) {
     console.log(err);
   }

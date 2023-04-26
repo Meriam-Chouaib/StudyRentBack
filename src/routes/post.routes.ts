@@ -6,6 +6,8 @@ import { PostController } from '../controllers';
 import { postSchema } from '../Schemas/post';
 import { postMiddleware, MiddlewarePost } from '..//middlewares/post.validate.middelware';
 import upload from '../middlewares/multer';
+import { paginationSchema } from '../Schemas/pagination/Pagination.validation';
+import { validateParams } from '../middlewares/pagination.validate';
 
 const postRouter = express.Router();
 /**
@@ -36,7 +38,19 @@ postRouter.post(
  *         description: list of posts
  */
 
-postRouter.get(Endpoints.ROOT, PostController.getPosts);
+postRouter.get(Endpoints.ROOT, validateParams(paginationSchema), PostController.getPosts);
+
+/**
+ * @swagger
+ * /:
+ *   posts:
+ *     summary: Get list of posts filtred
+ *     description: Get list of posts filtred
+ *       200:
+ *         description: list of posts filtred
+ */
+
+// postRouter.get(Endpoints.post.FILTRED, PostController.getPostsFiltred);
 
 /**
  * @swagger
@@ -71,7 +85,13 @@ postRouter.get(Endpoints.post.SINGLE, PostController.getPostById);
  *         description: post deleted successfully!
  */
 
-postRouter.delete(Endpoints.post.SINGLE, PostController.deletePost);
-postRouter.patch(Endpoints.post.SINGLE, PostController.editPost);
+postRouter.delete(Endpoints.post.SINGLE, isRole(['ADMIN', 'OWNER']), PostController.deletePost);
+postRouter.patch(
+  Endpoints.post.SINGLE,
+  upload.array('files'),
+  verifyToken,
+  isRole(['ADMIN', 'OWNER']),
+  PostController.editPost,
+);
 
 export default postRouter;

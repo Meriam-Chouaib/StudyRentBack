@@ -6,6 +6,10 @@ import * as postService from '../services/post.service';
 import ApiError from '../errors/ApiError';
 import { postSchema } from '../Schemas/post/post.validation';
 import { getTokenFromHeaders } from '../utils';
+import { Request } from '../types/types';
+import { SplitInterval } from '../utils/splitIntervale';
+import { Filter } from '../types/post/post.types';
+
 //------------------------- create post --------------------------------------
 /**
  * create post
@@ -40,38 +44,54 @@ const createPost = async (req: Request, res: Response, next: NextFunction): Prom
 
 // get posts
 
+// const getPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+//   try {
+//     const page = Number(req.query.page) || 1;
+//     const rowsPerPage = Number(req.query.rowsPerPage) || 9;
+//     const title = req.query.title as string;
+
+//     const filter: Prisma.PostWhereInput = {
+//       title: {
+//         contains: title,
+//       },
+//     };
+
+//     res
+//       .status(200)
+//       .send(await postService.getPosts({ page: page, filter: filter, rowsPerPage: rowsPerPage }));
+//   } catch (e) {
+//     throw new ApiError(e.statusCode, e.message);
+//   }
+// };
 const getPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const page = Number(req.query.page) || 1;
-    const rowsPerPage = Number(req.query.rowsPerPage) || 9;
-    const title = req.query.title as string;
-    const filter: Prisma.PostWhereInput = {
-      title: {
-        contains: title,
-      },
-    };
+    const { page, rowsPerPage, filter } = req.query;
+    console.log('filter from controller', filter);
 
-    res
-      .status(200)
-      .send(await postService.getPosts({ page: page, filter: filter, rowsPerPage: rowsPerPage }));
+    res.status(200).send(
+      await postService.getPosts({
+        page: Number(page),
+        rowsPerPage: Number(rowsPerPage),
+        filter: filter as Filter,
+      }),
+    );
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
 };
 
 // get posts by owner
-
 const getPostsByOwner = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const page = Number(req.query.page) || 1;
     const rowsPerPage = Number(req.query.rowsPerPage) || 9;
     const title = req.query.title as string;
-    const idOwner = Number(req.query.idOwner);
+    console.log('id useeeeeeeeeeeeeeeeeeer', req.userId);
 
-    const filter: Prisma.PostWhereInput = {
-      title: {
-        contains: title,
-      },
+    const idOwner = Number(req.userId);
+
+    const filter: Filter = {
+      title: title,
     };
 
     res.status(200).send(
@@ -108,6 +128,7 @@ const getPostById = async (
     //  throw new ApiError(e.statusCode, e.message);
   }
 };
+
 // delete post
 const deletePost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -132,6 +153,7 @@ const deletePost = async (req: Request, res: Response, next: NextFunction): Prom
     //next(e.);
   }
 };
+
 // edit post
 const editPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -170,4 +192,12 @@ const editPost = async (req: Request, res: Response, next: NextFunction): Promis
     // res.status(e.status).send(e.message);
   }
 };
-export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner };
+export {
+  createPost,
+  getPosts,
+  getPostById,
+  deletePost,
+  editPost,
+  getPostsByOwner,
+  // getPostsFiltred,
+};

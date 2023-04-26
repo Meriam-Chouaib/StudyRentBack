@@ -7,8 +7,9 @@ import ApiError from '../errors/ApiError';
 import httpStatus from 'http-status';
 
 import ApiResponse from '../utils/ApiResponse';
-import { GetPostsParams } from '../types/post/post.types';
+import { Filter, GetPostsParams } from '../types/post/post.types';
 import { decodeToken } from './jwt.service';
+import { SplitInterval } from '../utils/splitIntervale';
 
 // create post
 const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
@@ -46,15 +47,49 @@ const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
   }
 };
 
-//get posts
+// _____________________________________________  get posts with filter  ______________________________________________________________________
 const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
   try {
-    const result = await postQueries.getPosts({ page, rowsPerPage, filter });
+    const filterData: Filter = JSON.parse(filter.toString());
+
+    if (filter) {
+      const { city, nb_rooms, surface, title, price } = filterData;
+      filter = { ...filter, price, surface, city, nb_rooms, title };
+    }
+    const result = await postQueries.getPosts({
+      page,
+      rowsPerPage,
+      filter: filterData,
+    });
+
     return new ApiResponse(httpStatus.OK, result, 'List of posts');
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
 };
+// const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
+//   try {
+//     let filterData = {};
+
+//     if (filter) {
+//       let filterData: Filter = JSON.parse(filter.toString());
+//       const { city, nb_rooms, surface, title, price } = filterData;
+//       filter = { ...filter, price, surface, city, nb_rooms, title };
+//     }
+//     const result = await postQueries.getPosts({
+//       page,
+//       rowsPerPage,
+//       filter: filterData,
+//     });
+
+//     return new ApiResponse(httpStatus.OK, result, 'List of posts');
+//   } catch (e) {
+//     throw new ApiError(e.statusCode, e.message);
+//   }
+// };
+
+// _____________________________________________  get posts by owner  ______________________________________________________________________
+
 const getPostsByOwner = async ({ page, rowsPerPage, filter, idOwner }: GetPostsParams) => {
   try {
     const result = await postQueries.getPostsByOwner({ page, rowsPerPage, filter, idOwner });
@@ -67,8 +102,8 @@ const getPostsByOwner = async ({ page, rowsPerPage, filter, idOwner }: GetPostsP
     throw new ApiError(e.statusCode, e.message);
   }
 };
+// _____________________________________________  get post by id  ______________________________________________________________________
 
-// get post by id
 const getPostById = async (postId: number): Promise<ApiResponse> => {
   try {
     const post: Post | null = await postQueries.getPostById(postId);
@@ -81,7 +116,8 @@ const getPostById = async (postId: number): Promise<ApiResponse> => {
     throw new ApiError(e.statusCode, e.message);
   }
 };
-// delete post
+// _____________________________________________  delete post by id  ______________________________________________________________________
+
 const deletePost = async (postId: number): Promise<void> => {
   try {
     // first, get the post by its ID to ensure it exists
@@ -105,7 +141,8 @@ const deleteFiles = async (postId: number): Promise<void> => {
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, e.message);
   }
 };
-// edit post
+// _____________________________________________  edit post ______________________________________________________________________
+
 const editPost = async (postId: number, data: Post, fileData: Express.Multer.File[]) => {
   try {
     const postToUpdate = await postQueries.getPostById(postId);
@@ -129,11 +166,11 @@ const editPost = async (postId: number, data: Post, fileData: Express.Multer.Fil
 
       files: postImages,
     };
-    // update the post's data
-    const updatedPost = await postQueries.editPost(postId, dataWithFiles, fileData);
-    // delete files associate to that post
-    await deleteFiles(postId);
-
+    const updatedPost = await postQueries.editPost(
+      postId,
+      { ...dataWithFiles, postal_code: dataWithFiles.postal_code.toString() },
+      fileData,
+    );
     return updatedPost;
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
