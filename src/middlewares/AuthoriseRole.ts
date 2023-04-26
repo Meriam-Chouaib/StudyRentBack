@@ -6,8 +6,13 @@ import { Request } from '../types/types';
 export const isRole =
   (roles: string[]) => async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log('id user', req.userId);
+
       const user = await getUserById(req.userId);
+      console.log('role user', user.role);
+
       if (!user) return res.status(500).send({ message: 'utilisateur introuvable' });
+
       if (roles.indexOf(user.role) === -1)
         return res.status(403).send({ message: 'Accès interdit' });
       else next();
