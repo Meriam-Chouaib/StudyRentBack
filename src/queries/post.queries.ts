@@ -1,14 +1,21 @@
 import { createFiles } from './file.queries';
 import { Files, Post, Prisma, User } from '@prisma/client';
-import { GetPostsParams } from '../types/post/post.types';
+import { Filter, GetPostsParams } from '../types/post/post.types';
 import { getDbInstance } from '../database';
 import * as userQueries from '../queries/user.queries';
+import { applyFilters, testValue } from '../utils/whereResult';
 
 //-----------connection to the database
 const db = getDbInstance();
 
 // create post
-
+interface FilterFields {
+  city?: string;
+  title?: string;
+  nb_rooms?: number;
+  price?: number[];
+  surface?: number[];
+}
 export const createPost = async (post: Post, filesData: Express.Multer.File[]): Promise<Post> => {
   try {
     return await db.post.create({
@@ -50,10 +57,7 @@ export const createPost = async (post: Post, filesData: Express.Multer.File[]): 
 
 export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): Promise<Post[]> => {
   try {
-    console.log('eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeerrrrrrrrrrrrr', filter);
-
     let filters = {};
-
     if (page && rowsPerPage) {
       filters = {
         ...filters,
@@ -66,19 +70,15 @@ export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): P
     }
 
     if (filter) {
-      const { nb_rooms, price, surface, title, city } = JSON.parse(filter.toString());
-
+      const filterObject: FilterFields = JSON.parse(filter.toString());
+      const { nb_rooms, price, surface, title, city } = filterObject;
+      console.log(filterObject);
       filters = {
         ...filters,
-        where: {
-          city: city ? { contains: city } : '',
-          title: title ? { contains: title } : '',
-          nb_rooms: nb_rooms && nb_rooms !== '' ? { equals: Number(nb_rooms) } : true,
-          price: price && price !== '' ? { lte: price[1], gte: price[0] } : true,
-          surface: surface && surface !== '' ? { lte: surface[1], gte: surface[0] } : true,
-        },
+        where: applyFilters<FilterFields>(filterObject),
       };
     }
+
     return await db.post.findMany(filters);
   } catch (err) {
     console.log(err);
