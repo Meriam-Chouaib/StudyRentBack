@@ -1,20 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import Joi from 'joi';
-import pick from '../utils/pick';
-import { ApiError } from '../errors';
 import httpStatus from 'http-status';
-import { Logger } from '../logger';
+import Joi from 'joi';
 import { ValidationError } from '../errors/ValidationError';
-import { CHECK_FIELDS } from '../utils/globals';
-
-export const validate =
-  (schema: Record<string, any>) =>
-  (req: Request, res: Response, next: NextFunction): void => {
-    const validSchema = pick(schema, ['params', 'query', 'body']);
-    const object = pick(req, Object.keys(validSchema));
-    const { value, error } = Joi.compile(validSchema)
+import { CHECK_FIELDS } from '../utils';
+export const validateParams =
+  (schema: Record<string, any>) => (req: Request, res: Response, next: NextFunction) => {
+    const { value, error } = Joi.compile(schema)
       .prefs({ errors: { label: 'key' }, abortEarly: false })
-      .validate(object);
+      .validate(req.query);
+    console.log(error);
 
     if (error) {
       const errorMessage = CHECK_FIELDS;
@@ -34,5 +28,6 @@ export const validate =
       }
     }
     Object.assign(req, value);
+    //   req.data = value;
     return next();
   };

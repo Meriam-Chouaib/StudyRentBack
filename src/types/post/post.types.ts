@@ -4,5 +4,17 @@ export type CreatePost = Omit<Post, 'id' | 'likes' | 'datePost'>;
 export type GetPostsParams = {
   page: number;
   rowsPerPage: number;
-  filter?: Prisma.PostWhereInput;
+  filter?: Filter;
+  idOwner?: number;
 };
+export interface Filter {
+  title?: string;
+  nb_rooms?: number;
+  price?: number[];
+  surface?: number[];
+  city?: string;
+}
+export interface minMaxInterval {
+  min: number;
+  max: number;
+}
