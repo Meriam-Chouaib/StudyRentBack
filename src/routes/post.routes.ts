@@ -87,7 +87,12 @@ postRouter.get(Endpoints.post.SINGLE, PostController.getPostById);
  *         description: post deleted successfully!
  */
 
-postRouter.delete(Endpoints.post.SINGLE, isRole(['ADMIN', 'OWNER']), PostController.deletePost);
+postRouter.delete(
+  Endpoints.post.SINGLE,
+  verifyToken,
+  isRole(['ADMIN', 'OWNER']),
+  PostController.deletePost,
+);
 postRouter.patch(
   Endpoints.post.SINGLE,
   upload.array('files'),

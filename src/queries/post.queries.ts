@@ -16,6 +16,42 @@ interface FilterFields {
   price?: number[];
   surface?: number[];
 }
+// export const createPost = async (post: Post, filesData: Express.Multer.File[]): Promise<Post> => {
+//   try {
+//     return await db.post.create({
+//       data: {
+//         description: post.description,
+//         title: post.title,
+//         city: post.city,
+//         nb_roommate: post.nb_roommate,
+//         nb_rooms: post.nb_rooms,
+//         isLocated: false,
+//         likes: 0,
+//         postal_code: post.postal_code,
+//         price: post.price,
+//         state: post.state,
+//         posterId: post.posterId,
+//         surface: post.surface,
+//         datePost: new Date(),
+//         files: {
+//           create: filesData.map((file: Express.Multer.File) => {
+//             return {
+//               id: undefined,
+//               postId: undefined,
+//               filename: file.filename,
+//               path: file.path,
+//             };
+//           }),
+//         },
+//       },
+//       include: {
+//         files: true,
+//       },
+//     });
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
 export const createPost = async (post: Post, filesData: Express.Multer.File[]): Promise<Post> => {
   try {
     return await db.post.create({
@@ -31,7 +67,7 @@ export const createPost = async (post: Post, filesData: Express.Multer.File[]): 
         price: post.price,
         state: post.state,
         posterId: post.posterId,
-        surface: post.surface,
+        surface: Number(post.surface),
         datePost: new Date(),
         files: {
           create: filesData.map((file: Express.Multer.File) => {
@@ -68,7 +104,6 @@ export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): P
         },
       };
     }
-
     if (filter) {
       const filterObject: FilterFields = JSON.parse(filter.toString());
       const { nb_rooms, price, surface, title, city } = filterObject;
@@ -139,27 +174,23 @@ export const editPost = async (
   postId: number,
   post: Post,
   filesData: Express.Multer.File[],
-): Promise<Post> => {
+): Promise<Post | null> => {
   try {
-    console.log('filesData', filesData);
-    console.log('post', post);
-
-    return await db.post.update({
+    const updatedPost: Post | null = await db.post.update({
       where: { id: postId },
+
       data: {
         description: post.description,
         title: post.title,
         city: post.city,
         nb_roommate: post.nb_roommate,
         nb_rooms: post.nb_rooms,
-        isLocated: false,
-        likes: 0,
-        postal_code: post.postal_code,
-
         price: post.price,
         state: post.state,
-        posterId: post.posterId,
-        surface: Number(post.surface),
+        postal_code: post.postal_code.toString(),
+        isLocated: false,
+        likes: 0,
+
         datePost: new Date(),
         files: {
           create: filesData.map((file: Express.Multer.File) => {
@@ -176,6 +207,7 @@ export const editPost = async (
         files: true,
       },
     });
+    return updatedPost;
   } catch (err) {
     console.log(err);
   }

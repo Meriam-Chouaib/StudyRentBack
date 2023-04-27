@@ -10,6 +10,42 @@ import ApiResponse from '../utils/ApiResponse';
 import { Filter, GetPostsParams } from '../types/post/post.types';
 
 // create post
+// const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
+//   try {
+//     // images
+//     const postImages: Files[] = fileData.map((file: Express.Multer.File) => {
+//       return {
+//         id: undefined,
+//         postId: undefined,
+//         filename: file.filename,
+//         path: file.path,
+//       };
+//     });
+
+//     const dataWithFiles = {
+//       ...data,
+//       nb_rooms: Number(data.nb_rooms),
+//       nb_roommate: Number(data.nb_roommate),
+//       surface: Number(data.surface),
+//       posterId: Number(data.posterId),
+//       poster: userQueries.getUserById(Number(data.posterId)),
+//       files: postImages,
+//     };
+//     console.log('dataWithFiles', dataWithFiles);
+
+//     const post = await postQueries.createPost(
+//       {
+//         ...dataWithFiles,
+//       },
+//       fileData,
+//     );
+//     return post;
+//   } catch (e) {
+//     throw new ApiError(e.statusCode, e.message);
+//   }
+// };
+
+// create post
 const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
   try {
     // images
@@ -24,17 +60,14 @@ const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
 
     const dataWithFiles = {
       ...data,
-      nb_rooms: Number(data.nb_rooms),
-      nb_roommate: Number(data.nb_roommate),
-      surface: Number(data.surface),
-      posterId: Number(data.posterId),
-      poster: userQueries.getUserById(Number(data.posterId)),
+
       files: postImages,
     };
     console.log('dataWithFiles', dataWithFiles);
 
     const post = await postQueries.createPost(
       {
+        nb_roommate: Number(data.nb_roommate),
         ...dataWithFiles,
       },
       fileData,
@@ -110,6 +143,7 @@ const getPostById = async (postId: number): Promise<ApiResponse> => {
 };
 // _____________________________________________  delete post by id  ______________________________________________________________________
 
+// delete post
 const deletePost = async (postId: number): Promise<void> => {
   try {
     // first, get the post by its ID to ensure it exists
