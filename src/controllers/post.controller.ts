@@ -22,45 +22,20 @@ import { Request } from '../types/types';
 const createPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const filesData = req.files as Express.Multer.File[];
-    //    console.log(req.body.userId);
+    console.log('req bodyyyy', req.body);
 
-    // const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
-    const data: Post = req.body;
-    // data.posterId = req.body.userId;
-    // const { value, error } = postSchema.validate(data);
+    const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
 
-    console.log(req.body);
-
+    const { value, error } = postSchema.validate(data);
+    data.posterId = req.userId;
     const post = await postService.createPost(data, filesData);
     res.status(httpStatus.OK).send(post);
   } catch (e) {
-    console.log(e);
-
-    // next(e);
+    next(e);
   }
 };
-
 // get posts
 
-// const getPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-//   try {
-//     const page = Number(req.query.page) || 1;
-//     const rowsPerPage = Number(req.query.rowsPerPage) || 9;
-//     const title = req.query.title as string;
-
-//     const filter: Prisma.PostWhereInput = {
-//       title: {
-//         contains: title,
-//       },
-//     };
-
-//     res
-//       .status(200)
-//       .send(await postService.getPosts({ page: page, filter: filter, rowsPerPage: rowsPerPage }));
-//   } catch (e) {
-//     throw new ApiError(e.statusCode, e.message);
-//   }
-// };
 const getPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { page, rowsPerPage, filter } = req.query;
@@ -85,7 +60,7 @@ const getPostsByOwner = async (req: Request, res: Response, next: NextFunction):
     const rowsPerPage = Number(req.query.rowsPerPage) || 9;
     const title = req.query.title as string;
 
-    console.log('id useeeeeeeeeeeeeeeeeeer', req.userId);
+    console.log('id useer', req.userId);
 
     const idOwner = Number(req.userId);
 
@@ -123,8 +98,6 @@ const getPostById = async (
     res.status(httpStatus.OK).send(post);
   } catch (e) {
     res.status(e.statusCode).send(e.message);
-
-    //  throw new ApiError(e.statusCode, e.message);
   }
 };
 
@@ -148,58 +121,24 @@ const deletePost = async (req: Request, res: Response, next: NextFunction): Prom
     res.status(httpStatus.OK).send('deletedPost');
     // return new ApiResponse(httpStatus.OK, {}, 'Post deleted successfully!');
   } catch (e) {
-    res.status(e.status).send(e.message);
-    //next(e.);
+    res.status(e.statusCode).send(e.message);
   }
 };
 
 // edit post
 const editPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    console.log('111111111111111111111111', req.files);
-    console.log('222222222222222222222222', req.body);
-
     const postId = Number(req.params.id);
     const filesData = req.files as Express.Multer.File[];
-    // const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
-    const data: Post = {
-      city: req.body.city,
-      datePost: req.body.datePost,
-      id: undefined,
-      title: req.body.title,
-      description: req.body.description,
-      posterId: req.body.posterId,
-      likes: undefined,
-      nb_rooms: req.body.nb_rooms,
-      surface: req.body.surface,
-      price: req.body.price,
-      nb_roommate: req.body.nb_roommate,
-      state: req.body.state,
-      isLocated: undefined,
-      postal_code: req.body.postal_code,
-    };
+    const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
 
-    const { value, error } = postSchema.validate(data);
-    console.log('postId:', postId);
-    console.log('data:', data);
-    console.log('filesData:', filesData);
+    const { value, error } = postSchema.validate(req.body);
 
-    // const updatedPost = await postService.editPost(postId, data, filesData);
-    // console.log('updatedPost', updatedPost);
+    const updatedPost = await postService.editPost(postId, data, filesData);
 
-    // res.status(httpStatus.OK).send(updatedPost);
+    res.status(httpStatus.OK).send(updatedPost);
   } catch (e) {
-    console.log(e);
-
-    // res.status(e.status).send(e.message);
+    throw new ApiError(e.statusCode, e.message);
   }
 };
-export {
-  createPost,
-  getPosts,
-  getPostById,
-  deletePost,
-  editPost,
-  getPostsByOwner,
-  // getPostsFiltred,
-};
+export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner };
