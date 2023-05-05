@@ -132,13 +132,23 @@ const editPost = async (req: Request, res: Response, next: NextFunction): Promis
     const filesData = req.files as Express.Multer.File[];
     const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
 
-    const { value, error } = postSchema.validate(req.body);
+    // const { value, error } = postSchema.validate(req.body);
 
-    const updatedPost = await postService.editPost(postId, data, filesData);
+    const updatedPost = await postService.editPost(postId, data);
 
     res.status(httpStatus.OK).send(updatedPost);
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
 };
-export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner };
+const editPostFiles = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const postId = Number(req.params.id);
+    const filesData = req.files as Express.Multer.File[];
+    const updatedPost = await postService.editPostFiles(postId, filesData);
+    res.status(httpStatus.OK).send(updatedPost);
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner, editPostFiles };

@@ -95,10 +95,17 @@ postRouter.delete(
 );
 postRouter.patch(
   Endpoints.post.SINGLE,
-  upload.array('files'),
+  // upload.array('files'),
   verifyToken,
   isRole(['ADMIN', 'OWNER']),
   PostController.editPost,
+);
+postRouter.patch(
+  Endpoints.post.SINGLE,
+  upload.array('files'),
+  verifyToken,
+  isRole(['ADMIN', 'OWNER']),
+  PostController.editPostFiles,
 );
 
 export default postRouter;

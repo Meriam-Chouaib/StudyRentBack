@@ -58,17 +58,16 @@ const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
       };
     });
 
-    const dataWithFiles = {
-      ...data,
+    console.log('dataaaaaaaaaaaaaaaaaaaaaaaaaaaaa from service ', data);
 
-      files: postImages,
-    };
-    console.log('dataWithFiles', dataWithFiles);
+    console.log('fileData from service', fileData);
 
     const post = await postQueries.createPost(
       {
         nb_roommate: Number(data.nb_roommate),
-        ...dataWithFiles,
+        city: data.city,
+        price: data.price,
+        ...data,
       },
       fileData,
     );
@@ -92,26 +91,6 @@ const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
     throw new ApiError(e.statusCode, e.message);
   }
 };
-// const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
-//   try {
-//     let filterData = {};
-
-//     if (filter) {
-//       let filterData: Filter = JSON.parse(filter.toString());
-//       const { city, nb_rooms, surface, title, price } = filterData;
-//       filter = { ...filter, price, surface, city, nb_rooms, title };
-//     }
-//     const result = await postQueries.getPosts({
-//       page,
-//       rowsPerPage,
-//       filter: filterData,
-//     });
-
-//     return new ApiResponse(httpStatus.OK, result, 'List of posts');
-//   } catch (e) {
-//     throw new ApiError(e.statusCode, e.message);
-//   }
-// };
 
 // _____________________________________________  get posts by owner  ______________________________________________________________________
 
@@ -168,18 +147,36 @@ const deleteFiles = async (postId: number): Promise<void> => {
   }
 };
 // edit post
-const editPost = async (postId: number, data: Post, fileData: Express.Multer.File[]) => {
-  console.log(
-    'from service postId',
-    postId,
-    'from service data',
-    data,
-    'from service fileData',
-    fileData,
-  );
-
+const editPost = async (postId: number, data: Post) => {
   try {
-    const postImages: Files[] = fileData.map((file: Express.Multer.File, index) => {
+    // get the post to update
+    const postToUpdate = await postQueries.getPostById(postId);
+    console.log('99999999999999999999999', postToUpdate);
+
+    if (!postToUpdate) {
+      throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
+    }
+
+    const updatedInfoPost = await postQueries.editPost(postId, {
+      nb_roommate: Number(data.nb_roommate),
+      city: data.city,
+      price: data.price,
+      ...data,
+    });
+
+    console.log('updatedInfoPost', updatedInfoPost);
+
+    return updatedInfoPost;
+  } catch (e) {
+    console.log(e);
+
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+
+const editPostFiles = async (postId: number, fileData: Express.Multer.File[]) => {
+  try {
+    const postImages: Files[] = fileData?.map((file: Express.Multer.File, index) => {
       return {
         id: index,
         postId: postId,
@@ -194,19 +191,8 @@ const editPost = async (postId: number, data: Post, fileData: Express.Multer.Fil
     if (!postToUpdate) {
       throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
     }
-    // update the post's data
-    const dataWithFiles = {
-      ...data,
 
-      files: postImages,
-    };
-    const updatedPost = await postQueries.editPost(
-      postId,
-      { ...dataWithFiles, postal_code: dataWithFiles.postal_code.toString() },
-      fileData,
-    );
-
-    //   console.log('dataWithFiles', dataWithFiles);
+    const updatedPost = await postQueries.editPostFiles(postId, fileData);
 
     return updatedPost;
   } catch (e) {
@@ -215,4 +201,14 @@ const editPost = async (postId: number, data: Post, fileData: Express.Multer.Fil
     throw new ApiError(e.statusCode, e.message);
   }
 };
-export { createPost, getPosts, getPostById, deletePost, deleteFiles, editPost, getPostsByOwner };
+
+export {
+  createPost,
+  getPosts,
+  getPostById,
+  deletePost,
+  deleteFiles,
+  editPost,
+  getPostsByOwner,
+  editPostFiles,
+};
