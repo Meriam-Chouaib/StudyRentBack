@@ -137,7 +137,11 @@ export const deletePost = async (postId: number): Promise<void> => {
 };
 
 // edit post by id
-export const editPost = async (postId: number, post: Post): Promise<Post | null> => {
+export const editPost = async (
+  postId: number,
+  post: Post,
+  filesData: Express.Multer.File[],
+): Promise<Post | null> => {
   try {
     // console.log('pooooooooooooooossssttt from query', post);
     // console.log('filesDataaaaaaaaaaaaaaaaaaaaaaaaaa from query', filesData);
@@ -159,29 +163,11 @@ export const editPost = async (postId: number, post: Post): Promise<Post | null>
         posterId: post.posterId,
         surface: Number(post.surface),
         datePost: new Date(),
-      },
-      include: {
-        files: true,
-      },
-    });
-    return updatedPost;
-  } catch (err) {
-    console.log(err);
-  }
-};
-export const editPostFiles = async (
-  postId: number,
-  filesData: Express.Multer.File[],
-): Promise<Post | null> => {
-  try {
-    const updatedPost: Post | null = await db.post.update({
-      where: { id: postId },
-      data: {
         files: {
           create: filesData.map((file: Express.Multer.File) => {
             return {
               id: undefined,
-              postId: undefined,
+              postId: post.id,
               filename: file.filename,
               path: file.path,
             };
@@ -197,3 +183,31 @@ export const editPostFiles = async (
     console.log(err);
   }
 };
+// export const editPostFiles = async (
+//   postId: number,
+//   filesData: Express.Multer.File[],
+// ): Promise<Post | null> => {
+//   try {
+//     const updatedPost: Post | null = await db.post.update({
+//       where: { id: postId },
+//       data: {
+//         files: {
+//           create: filesData.map((file: Express.Multer.File) => {
+//             return {
+//               id: undefined,
+//               postId: undefined,
+//               filename: file.filename,
+//               path: file.path,
+//             };
+//           }),
+//         },
+//       },
+//       include: {
+//         files: true,
+//       },
+//     });
+//     return updatedPost;
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };

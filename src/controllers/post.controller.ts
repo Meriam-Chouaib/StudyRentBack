@@ -134,21 +134,21 @@ const editPost = async (req: Request, res: Response, next: NextFunction): Promis
 
     // const { value, error } = postSchema.validate(req.body);
 
-    const updatedPost = await postService.editPost(postId, data);
+    const updatedPost = await postService.editPost(postId, data, filesData);
 
     res.status(httpStatus.OK).send(updatedPost);
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
 };
-const editPostFiles = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  try {
-    const postId = Number(req.params.id);
-    const filesData = req.files as Express.Multer.File[];
-    const updatedPost = await postService.editPostFiles(postId, filesData);
-    res.status(httpStatus.OK).send(updatedPost);
-  } catch (e) {
-    throw new ApiError(e.statusCode, e.message);
-  }
-};
-export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner, editPostFiles };
+// const editPostFiles = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+//   try {
+//     const postId = Number(req.params.id);
+//     const filesData = req.files as Express.Multer.File[];
+//     const updatedPost = await postService.editPostFiles(postId, filesData);
+//     res.status(httpStatus.OK).send(updatedPost);
+//   } catch (e) {
+//     throw new ApiError(e.statusCode, e.message);
+//   }
+// };
+export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner };

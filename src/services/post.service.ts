@@ -49,14 +49,14 @@ import { Filter, GetPostsParams } from '../types/post/post.types';
 const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
   try {
     // images
-    const postImages: Files[] = fileData.map((file: Express.Multer.File) => {
-      return {
-        id: undefined,
-        postId: undefined,
-        filename: file.filename,
-        path: file.path,
-      };
-    });
+    // const postImages: Files[] = fileData.map((file: Express.Multer.File) => {
+    //   return {
+    //     id: undefined,
+    //     postId: undefined,
+    //     filename: file.filename,
+    //     path: file.path,
+    //   };
+    // });
 
     console.log('dataaaaaaaaaaaaaaaaaaaaaaaaaaaaa from service ', data);
 
@@ -147,7 +147,7 @@ const deleteFiles = async (postId: number): Promise<void> => {
   }
 };
 // edit post
-const editPost = async (postId: number, data: Post) => {
+const editPost = async (postId: number, data: Post, fileData: Express.Multer.File[]) => {
   try {
     // get the post to update
     const postToUpdate = await postQueries.getPostById(postId);
@@ -157,12 +157,16 @@ const editPost = async (postId: number, data: Post) => {
       throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
     }
 
-    const updatedInfoPost = await postQueries.editPost(postId, {
-      nb_roommate: Number(data.nb_roommate),
-      city: data.city,
-      price: data.price,
-      ...data,
-    });
+    const updatedInfoPost = await postQueries.editPost(
+      postId,
+      {
+        nb_roommate: Number(data.nb_roommate),
+        city: data.city,
+        price: data.price,
+        ...data,
+      },
+      fileData,
+    );
 
     console.log('updatedInfoPost', updatedInfoPost);
 
