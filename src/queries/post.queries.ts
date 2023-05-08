@@ -143,9 +143,6 @@ export const editPost = async (
   filesData: Express.Multer.File[],
 ): Promise<Post | null> => {
   try {
-    // console.log('pooooooooooooooossssttt from query', post);
-    // console.log('filesDataaaaaaaaaaaaaaaaaaaaaaaaaa from query', filesData);
-
     const updatedPost: Post | null = await db.post.update({
       where: { id: postId },
 

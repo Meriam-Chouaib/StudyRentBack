@@ -150,8 +150,10 @@ const deleteFiles = async (postId: number): Promise<void> => {
 const editPost = async (postId: number, data: Post, fileData: Express.Multer.File[]) => {
   try {
     // get the post to update
+    console.log('fileData', fileData);
+    console.log('Data', data);
+
     const postToUpdate = await postQueries.getPostById(postId);
-    console.log('99999999999999999999999', postToUpdate);
 
     if (!postToUpdate) {
       throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
@@ -168,8 +170,6 @@ const editPost = async (postId: number, data: Post, fileData: Express.Multer.Fil
       fileData,
     );
 
-    console.log('updatedInfoPost', updatedInfoPost);
-
     return updatedInfoPost;
   } catch (e) {
     console.log(e);
@@ -178,41 +178,4 @@ const editPost = async (postId: number, data: Post, fileData: Express.Multer.Fil
   }
 };
 
-const editPostFiles = async (postId: number, fileData: Express.Multer.File[]) => {
-  try {
-    const postImages: Files[] = fileData?.map((file: Express.Multer.File, index) => {
-      return {
-        id: index,
-        postId: postId,
-        filename: file.filename,
-        path: file.path,
-      };
-    });
-
-    // get the post to update
-    const postToUpdate = await postQueries.getPostById(postId);
-
-    if (!postToUpdate) {
-      throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
-    }
-
-    const updatedPost = await postQueries.editPostFiles(postId, fileData);
-
-    return updatedPost;
-  } catch (e) {
-    console.log(e);
-
-    throw new ApiError(e.statusCode, e.message);
-  }
-};
-
-export {
-  createPost,
-  getPosts,
-  getPostById,
-  deletePost,
-  deleteFiles,
-  editPost,
-  getPostsByOwner,
-  editPostFiles,
-};
+export { createPost, getPosts, getPostById, deletePost, deleteFiles, editPost, getPostsByOwner };

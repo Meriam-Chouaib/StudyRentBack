@@ -13,6 +13,7 @@ export const Endpoints = {
     SINGLE: '/:id',
     LIST: '/postsByOwner',
     FILTRED: '/filtered',
+    FILES: '/files/:id',
   },
   user: {
     ALL: '/users',

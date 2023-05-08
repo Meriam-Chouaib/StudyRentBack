@@ -93,19 +93,29 @@ postRouter.delete(
   isRole(['ADMIN', 'OWNER']),
   PostController.deletePost,
 );
+postRouter.delete(
+  Endpoints.post.FILES,
+  verifyToken,
+  isRole(['ADMIN', 'OWNER']),
+  PostController.deleteFiles,
+);
+
+/**
+ * @swagger
+ * /:
+ *   post:
+ *     summary: Edit post
+ *     description: Edit post
+ *       200:
+ *         description: Post edited successfully
+ */
 postRouter.patch(
   Endpoints.post.SINGLE,
+  validate(postSchema.postSchema),
   upload.array('files'),
   verifyToken,
   isRole(['ADMIN', 'OWNER']),
   PostController.editPost,
 );
-// postRouter.patch(
-//   Endpoints.post.SINGLE,
-//   upload.array('files'),
-//   verifyToken,
-//   isRole(['ADMIN', 'OWNER']),
-//   PostController.editPostFiles,
-// );
 
 export default postRouter;
