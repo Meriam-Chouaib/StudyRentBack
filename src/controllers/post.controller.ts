@@ -105,17 +105,14 @@ const getPostById = async (
 const deletePost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const postId = req.params.id;
-
     // get the post by id
     const postToDelete = await postService.getPostById(Number(postId));
     console.log(postToDelete);
     if (!postToDelete) {
       throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
     }
-
     // delete the associated files first
     await postService.deleteFiles(Number(postId));
-
     // delete the post itself
     await postService.deletePost(Number(postId));
     res.status(httpStatus.OK).send('deletedPost');
@@ -124,16 +121,26 @@ const deletePost = async (req: Request, res: Response, next: NextFunction): Prom
     res.status(e.statusCode).send(e.message);
   }
 };
+const deleteFiles = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  try {
+    const postId = req.params.id;
+    await postService.deleteFiles(Number(postId));
+    res.status(httpStatus.OK).send('files deleted successfully');
+  } catch (e) {
+    res.status(e.statusCode).send(e.message);
+  }
+};
 
 // edit post
 const editPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    console.log('req.files', req.files);
+
     const postId = Number(req.params.id);
-    const filesData = req.files as Express.Multer.File[];
+    const filesData = (await req.files) as Express.Multer.File[];
+    console.log('filesData', filesData);
     const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
-
-    const { value, error } = postSchema.validate(req.body);
-
+    console.log('data', data);
     const updatedPost = await postService.editPost(postId, data, filesData);
 
     res.status(httpStatus.OK).send(updatedPost);
@@ -141,4 +148,5 @@ const editPost = async (req: Request, res: Response, next: NextFunction): Promis
     throw new ApiError(e.statusCode, e.message);
   }
 };
-export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner };
+
+export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner, deleteFiles };
