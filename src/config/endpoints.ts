@@ -14,6 +14,8 @@ export const Endpoints = {
     LIST: '/postsByOwner',
     FILTRED: '/filtered',
     FILES: '/files/:id',
+    FAVORIS: '/favoris/:userId/:postId',
+    ListFavoris: '/favoris/:id',
   },
   user: {
     ALL: '/users',

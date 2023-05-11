@@ -1,5 +1,5 @@
 import { createFiles } from './file.queries';
-import { Files, Post, Prisma, User } from '@prisma/client';
+import { Favorite, Files, Post, Prisma, User } from '@prisma/client';
 import { Filter, GetPostsParams } from '../types/post/post.types';
 import { getDbInstance } from '../database';
 import * as userQueries from '../queries/user.queries';
@@ -180,30 +180,39 @@ export const editPost = async (
     console.log(err);
   }
 };
-// export const editPostFiles = async (
+export const addPostToFavorite = async (userId: number, postId: number): Promise<Favorite> => {
+  console.log(userId, postId);
+
+  try {
+    return await db.favorite.create({
+      data: {
+        user: { connect: { id: userId } },
+        post: { connect: { id: postId } },
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const getListFavorite = async (userId: number): Promise<Favorite[]> => {
+  try {
+    return await db.favorite.findMany({
+      where: { userId },
+      include: { post: true },
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+// export const getPostFromListFavorite = async (
+//   userId: number,
 //   postId: number,
-//   filesData: Express.Multer.File[],
-// ): Promise<Post | null> => {
+// ): Promise<Favorite> => {
+//   console.log(userId, postId);
+
 //   try {
-//     const updatedPost: Post | null = await db.post.update({
-//       where: { id: postId },
-//       data: {
-//         files: {
-//           create: filesData.map((file: Express.Multer.File) => {
-//             return {
-//               id: undefined,
-//               postId: undefined,
-//               filename: file.filename,
-//               path: file.path,
-//             };
-//           }),
-//         },
-//       },
-//       include: {
-//         files: true,
-//       },
-//     });
-//     return updatedPost;
+//     return await db.favorite.findUnique({ where: { userId: userId, postId: postId } });
 //   } catch (err) {
 //     console.log(err);
 //   }

@@ -8,6 +8,7 @@ import { postSchema } from '../Schemas/post/post.validation';
 import { getTokenFromHeaders } from '../utils';
 import { Filter } from '../types/post/post.types';
 import { Request } from '../types/types';
+import ApiResponse from '../utils/ApiResponse';
 
 //------------------------- create post --------------------------------------
 /**
@@ -148,5 +149,44 @@ const editPost = async (req: Request, res: Response, next: NextFunction): Promis
     throw new ApiError(e.statusCode, e.message);
   }
 };
+const addPostToFavorite = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  const userId = Number(req.params.userId);
+  const postId = Number(req.params.postId);
 
-export { createPost, getPosts, getPostById, deletePost, editPost, getPostsByOwner, deleteFiles };
+  try {
+    const result = await postService.addPostToFavorites(userId, postId);
+    const apiResponse = new ApiResponse(
+      httpStatus.OK,
+      result,
+      'post added successfully to favorite',
+    );
+    apiResponse.send(res);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+const getFavoriteList = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const userId = Number(req.params.id);
+  try {
+    const result = await postService.getListFavorite(userId);
+    res.status(200).send(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export {
+  createPost,
+  getPosts,
+  getPostById,
+  deletePost,
+  editPost,
+  getPostsByOwner,
+  deleteFiles,
+  addPostToFavorite,
+  getFavoriteList,
+};

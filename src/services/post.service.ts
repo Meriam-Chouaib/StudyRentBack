@@ -1,4 +1,4 @@
-import { Files, Post } from '@prisma/client';
+import { Favorite, Files, Post } from '@prisma/client';
 // queries
 import * as postQueries from '../queries/post.queries';
 import * as userQueries from '../queries/user.queries';
@@ -177,5 +177,50 @@ const editPost = async (postId: number, data: Post, fileData: Express.Multer.Fil
     throw new ApiError(e.statusCode, e.message);
   }
 };
+const addPostToFavorites = async (userId: number, postId: number): Promise<Favorite> => {
+  try {
+    const post = await postQueries.getPostById(postId);
+    if (!post) {
+      throw new Error(`Post with ID ${postId} not found.`);
+    }
+    return await postQueries.addPostToFavorite(userId, postId);
+  } catch (e) {
+    console.log(e);
 
-export { createPost, getPosts, getPostById, deletePost, deleteFiles, editPost, getPostsByOwner };
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+const getListFavorite = async (userId: number): Promise<Post[]> => {
+  try {
+    console.log('user idd', userId);
+
+    const favoritPosts: Post[] = [];
+    const favorites: Favorite[] = await postQueries.getListFavorite(userId);
+    console.log(favorites);
+    // return favorites;
+
+    await Promise.all(
+      favorites.map(async (favorit: Favorite) => {
+        const post = await postQueries.getPostById(Number(favorit.postId));
+        favoritPosts.push(post);
+      }),
+    );
+    return favoritPosts;
+  } catch (e) {
+    console.log(e);
+
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+
+export {
+  createPost,
+  getPosts,
+  getPostById,
+  deletePost,
+  deleteFiles,
+  editPost,
+  getPostsByOwner,
+  addPostToFavorites,
+  getListFavorite,
+};
