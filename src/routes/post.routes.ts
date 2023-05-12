@@ -120,5 +120,6 @@ postRouter.patch(
 
 postRouter.post(Endpoints.post.FAVORIS, verifyToken, PostController.addPostToFavorite);
 postRouter.get(Endpoints.post.ListFavoris, verifyToken, PostController.getFavoriteList);
+postRouter.delete(Endpoints.post.FAVORIS, verifyToken, PostController.deletePostFromFavoris);
 
 export default postRouter;

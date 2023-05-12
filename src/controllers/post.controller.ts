@@ -159,26 +159,40 @@ const addPostToFavorite = async (
 
   try {
     const result = await postService.addPostToFavorites(userId, postId);
-    const apiResponse = new ApiResponse(
-      httpStatus.OK,
-      result,
-      'post added successfully to favorite',
-    );
-    apiResponse.send(res);
+    res.status(httpStatus.OK).send(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 const getFavoriteList = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const userId = Number(req.params.id);
+  const { page, rowsPerPage } = req.query;
+
   try {
-    const result = await postService.getListFavorite(userId);
-    res.status(200).send(result);
+    const result = await postService.getListFavorite({
+      page: Number(page),
+      rowsPerPage: Number(rowsPerPage),
+      userId: Number(userId),
+    });
+    res.status(200).send({ data: result });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
-
+const deletePostFromFavoris = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const userId = Number(req.params.userId);
+    const postId = Number(req.params.postId);
+    await postService.deletePostFromFavoriteList(postId, userId);
+    res.status(httpStatus.OK).send('post deleted from favorite list');
+  } catch (e) {
+    res.status(e.statusCode).send(e.message);
+  }
+};
 export {
   createPost,
   getPosts,
@@ -189,4 +203,5 @@ export {
   deleteFiles,
   addPostToFavorite,
   getFavoriteList,
+  deletePostFromFavoris,
 };

@@ -1,6 +1,6 @@
 import { createFiles } from './file.queries';
 import { Favorite, Files, Post, Prisma, User } from '@prisma/client';
-import { Filter, GetPostsParams } from '../types/post/post.types';
+import { Filter, GetFavoriteListParams, GetPostsParams } from '../types/post/post.types';
 import { getDbInstance } from '../database';
 import * as userQueries from '../queries/user.queries';
 import { applyFilters, testValue } from '../utils/whereResult';
@@ -180,40 +180,58 @@ export const editPost = async (
     console.log(err);
   }
 };
-export const addPostToFavorite = async (userId: number, postId: number): Promise<Favorite> => {
+export const addPostToFavorite = async (userId: number, postId: number): Promise<Post> => {
   console.log(userId, postId);
 
   try {
-    return await db.favorite.create({
+    const postAdded: Favorite = await db.favorite.create({
       data: {
         user: { connect: { id: userId } },
         post: { connect: { id: postId } },
       },
     });
+    return getPostById(postAdded.postId);
   } catch (err) {
     console.log(err);
   }
 };
-export const getListFavorite = async (userId: number): Promise<Favorite[]> => {
+export const getListFavorite = async ({
+  page,
+  rowsPerPage,
+  filter,
+  userId,
+}: GetFavoriteListParams): Promise<Favorite[]> => {
   try {
-    return await db.favorite.findMany({
-      where: { userId },
+    let filters = {};
+    if (page && rowsPerPage) {
+      filters = {
+        ...filters,
+        skip: (page - 1) * rowsPerPage,
+        take: rowsPerPage,
+        include: {
+          files: true,
+        },
+      };
+    }
+    filters = {
+      ...filters,
+      where: { userId: userId },
       include: { post: true },
+    };
+    return await db.favorite.findMany(filters);
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const deletePostFromFavorisList = async (id: number): Promise<void> => {
+  try {
+    await db.favorite.delete({
+      where: {
+        id: id,
+      },
+      select: { postId: true, userId: true },
     });
   } catch (err) {
     console.log(err);
   }
 };
-
-// export const getPostFromListFavorite = async (
-//   userId: number,
-//   postId: number,
-// ): Promise<Favorite> => {
-//   console.log(userId, postId);
-
-//   try {
-//     return await db.favorite.findUnique({ where: { userId: userId, postId: postId } });
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
