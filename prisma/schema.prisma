@@ -18,6 +18,7 @@ model User {
   posts    Post[]
    statut    user_statut @default(OFFLINE)
   role      user_role 
+  favorites Favorite[]
 }
 
 enum user_statut {
@@ -75,4 +76,14 @@ model Post {
   state         String @default("")
   isLocated     Boolean @default(false)
   postal_code   String @default("")
+  favorites      Favorite[] 
+
+}
+model Favorite {
+  id      Int    @id @default(autoincrement())
+  userId  Int
+  user    User   @relation(fields: [userId], references: [id])
+  postId  Int
+  post    Post   @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
 }
