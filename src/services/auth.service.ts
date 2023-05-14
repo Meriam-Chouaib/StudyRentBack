@@ -44,6 +44,8 @@ const signIn = async (email: string, password: string) => {
       }
     }
   } catch (e) {
+    console.log('serviiiiiiiiiiiiiiiiiiiiiiiiice', e);
+
     throw new ApiError(e.statusCode, e.message);
   }
 };
