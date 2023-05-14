@@ -7,61 +7,11 @@ import ApiError from '../errors/ApiError';
 import httpStatus from 'http-status';
 
 import ApiResponse from '../utils/ApiResponse';
-import { Filter, GetPostsParams } from '../types/post/post.types';
-
-// create post
-// const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
-//   try {
-//     // images
-//     const postImages: Files[] = fileData.map((file: Express.Multer.File) => {
-//       return {
-//         id: undefined,
-//         postId: undefined,
-//         filename: file.filename,
-//         path: file.path,
-//       };
-//     });
-
-//     const dataWithFiles = {
-//       ...data,
-//       nb_rooms: Number(data.nb_rooms),
-//       nb_roommate: Number(data.nb_roommate),
-//       surface: Number(data.surface),
-//       posterId: Number(data.posterId),
-//       poster: userQueries.getUserById(Number(data.posterId)),
-//       files: postImages,
-//     };
-//     console.log('dataWithFiles', dataWithFiles);
-
-//     const post = await postQueries.createPost(
-//       {
-//         ...dataWithFiles,
-//       },
-//       fileData,
-//     );
-//     return post;
-//   } catch (e) {
-//     throw new ApiError(e.statusCode, e.message);
-//   }
-// };
+import { Filter, GetFavoriteListParams, GetPostsParams } from '../types/post/post.types';
 
 // create post
 const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
   try {
-    // images
-    // const postImages: Files[] = fileData.map((file: Express.Multer.File) => {
-    //   return {
-    //     id: undefined,
-    //     postId: undefined,
-    //     filename: file.filename,
-    //     path: file.path,
-    //   };
-    // });
-
-    console.log('dataaaaaaaaaaaaaaaaaaaaaaaaaaaaa from service ', data);
-
-    console.log('fileData from service', fileData);
-
     const post = await postQueries.createPost(
       {
         nb_roommate: Number(data.nb_roommate),
@@ -177,11 +127,16 @@ const editPost = async (postId: number, data: Post, fileData: Express.Multer.Fil
     throw new ApiError(e.statusCode, e.message);
   }
 };
-const addPostToFavorites = async (userId: number, postId: number): Promise<Favorite> => {
+const addPostToFavorites = async (userId: number, postId: number): Promise<Post> => {
   try {
     const post = await postQueries.getPostById(postId);
     if (!post) {
       throw new Error(`Post with ID ${postId} not found.`);
+    }
+    const listFavorite = await getListFavorite({ userId: userId });
+    if (listFavorite.some((item) => item.id === post.id)) {
+      console.log('exists');
+      throw new Error(`Post with ID ${postId} already exists in the favorite list.`);
     }
     return await postQueries.addPostToFavorite(userId, postId);
   } catch (e) {
@@ -190,12 +145,20 @@ const addPostToFavorites = async (userId: number, postId: number): Promise<Favor
     throw new ApiError(e.statusCode, e.message);
   }
 };
-const getListFavorite = async (userId: number): Promise<Post[]> => {
+const getListFavorite = async ({
+  page,
+  rowsPerPage,
+  userId,
+}: GetFavoriteListParams): Promise<Post[]> => {
   try {
     console.log('user idd', userId);
 
     const favoritPosts: Post[] = [];
-    const favorites: Favorite[] = await postQueries.getListFavorite(userId);
+    const favorites: Favorite[] = await postQueries.getListFavorite({
+      page,
+      rowsPerPage,
+      userId,
+    });
     console.log(favorites);
     // return favorites;
 
@@ -212,7 +175,19 @@ const getListFavorite = async (userId: number): Promise<Post[]> => {
     throw new ApiError(e.statusCode, e.message);
   }
 };
-
+// delete post
+const deletePostFromFavoriteList = async (postId: number, userId: number): Promise<void> => {
+  try {
+    const posts = await postQueries.getListFavorite({ userId: userId });
+    posts.map(async (item) => {
+      if (item.postId == postId) {
+        await postQueries.deletePostFromFavorisList(item.id);
+      }
+    });
+  } catch (e) {
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
 export {
   createPost,
   getPosts,
@@ -223,4 +198,5 @@ export {
   getPostsByOwner,
   addPostToFavorites,
   getListFavorite,
+  deletePostFromFavoriteList,
 };

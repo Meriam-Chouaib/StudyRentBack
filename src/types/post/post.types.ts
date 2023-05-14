@@ -7,6 +7,12 @@ export type GetPostsParams = {
   filter?: Filter;
   idOwner?: number;
 };
+export type GetFavoriteListParams = {
+  page?: number;
+  rowsPerPage?: number;
+  filter?: Filter;
+  userId?: number;
+};
 export interface Filter {
   title?: string;
   nb_rooms?: number;
