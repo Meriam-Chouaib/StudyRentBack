@@ -12,6 +12,7 @@ model User {
   username  String
   password  String
   image     String
+  phone String?
   isLogged Boolean  @default(true)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @default(now())
@@ -76,6 +77,7 @@ model Post {
   state         String @default("")
   isLocated     Boolean @default(false)
   postal_code   String @default("")
+  
   favorites      Favorite[] 
 
 }
