@@ -24,4 +24,5 @@ export const Endpoints = {
     ROOT: '/appartements',
     CREATE: '/create',
   },
+  geocode: '/geocode',
 };

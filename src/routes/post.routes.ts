@@ -9,6 +9,7 @@ import { verifyToken } from '../middlewares/VerifyToken';
 import { isRole } from '../middlewares/AuthoriseRole';
 import { paginationSchema } from '../Schemas/pagination/Pagination.validation';
 import { validateParams } from '../middlewares/pagination.validate';
+import { geocodeController } from '../controllers';
 
 const postRouter = express.Router();
 /**
@@ -118,8 +119,48 @@ postRouter.patch(
   PostController.editPost,
 );
 
-postRouter.post(Endpoints.post.FAVORIS, verifyToken, PostController.addPostToFavorite);
+/**
+ * @swagger
+ * /:
+ *   post:
+ *     summary: get list of favorite
+ *     description: get Favorite list
+ *       200:
+ *         description: Get Favorite list successfully
+ */
 postRouter.get(Endpoints.post.ListFavoris, verifyToken, PostController.getFavoriteList);
+
+/**
+ * @swagger
+ * /:
+ *   post:
+ *     summary: Add post to favorite list
+ *     description: Add post to favorite list
+ *       200:
+ *         description: Add post to favorite list successfully
+ */
+postRouter.post(Endpoints.post.FAVORIS, verifyToken, PostController.addPostToFavorite);
+
+/**
+ * @swagger
+ * /:
+ *   post:
+ *     summary: delete post from favorite list
+ *     description: delete post from favorite list
+ *       200:
+ *         description: delete post from favorite list successfully
+ */
 postRouter.delete(Endpoints.post.FAVORIS, verifyToken, PostController.deletePostFromFavoris);
+
+/**
+ * @swagger
+ * /:
+ *   post:
+ *     summary: get localisation
+ *     description: get localisation
+ *       200:
+ *         description: Get localisation successfully
+ */
+postRouter.post(Endpoints.geocode, verifyToken, geocodeController.geocodeAddressController);
 
 export default postRouter;
