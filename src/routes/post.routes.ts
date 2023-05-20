@@ -161,6 +161,11 @@ postRouter.delete(Endpoints.post.FAVORIS, verifyToken, PostController.deletePost
  *       200:
  *         description: Get localisation successfully
  */
-postRouter.post(Endpoints.geocode, verifyToken, geocodeController.geocodeAddressController);
+postRouter.post(
+  Endpoints.geocode,
+  validate(postSchema.addressSchema),
+  verifyToken,
+  geocodeController.geocodeAddresse,
+);
 
 export default postRouter;

@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { geocodeAddress } from '../services/geocodeService';
 import { ApiError } from '../errors';
+import { Localization } from '../types/post/post.types';
+import { Post } from '@prisma/client';
 
-export const geocodeAddressController = async (
+export const geocodeAddresse = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -12,7 +14,6 @@ export const geocodeAddressController = async (
     const { latitude, longitude } = await geocodeAddress(state, postal_code, city);
     res.json({ latitude, longitude });
   } catch (e) {
-    res.json(e);
-    console.log(e);
+    res.status(e.statusCode).send(e.message);
   }
 };

@@ -8,6 +8,7 @@ import httpStatus from 'http-status';
 
 import ApiResponse from '../utils/ApiResponse';
 import { Filter, GetFavoriteListParams, GetPostsParams } from '../types/post/post.types';
+import { geocodeAddress, geocodeAddresses } from './geocodeService';
 
 // create post
 const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
@@ -30,13 +31,14 @@ const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
 // _____________________________________________  get posts with filter  ______________________________________________________________________
 const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
   try {
-    const result = await postQueries.getPosts({
+    const posts = await postQueries.getPosts({
       page,
       rowsPerPage,
       filter,
     });
+    const localizations = await geocodeAddresses(posts);
 
-    return new ApiResponse(httpStatus.OK, result, 'List of posts');
+    return new ApiResponse(httpStatus.OK, { posts, localizations }, 'List of posts');
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
@@ -46,10 +48,12 @@ const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
 
 const getPostsByOwner = async ({ page, rowsPerPage, filter, idOwner }: GetPostsParams) => {
   try {
-    const result = await postQueries.getPostsByOwner({ page, rowsPerPage, filter, idOwner });
+    const posts = await postQueries.getPostsByOwner({ page, rowsPerPage, filter, idOwner });
+    const localizations = await geocodeAddresses(posts);
+
     return new ApiResponse(
       httpStatus.OK,
-      result,
+      { posts, localizations },
       'List of posts for the owner with id: ' + idOwner,
     );
   } catch (e) {
@@ -64,8 +68,8 @@ const getPostById = async (postId: number): Promise<ApiResponse> => {
     if (!post) {
       throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
     }
-
-    return new ApiResponse(httpStatus.OK, post, `Post with id ${postId}`);
+    const localization = await geocodeAddress(post.state, post?.postal_code, post?.city);
+    return new ApiResponse(httpStatus.OK, { post, localization }, `Post with id ${postId}`);
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
