@@ -31,11 +31,11 @@ const signIn = async (email: string, password: string) => {
   try {
     const user = await userQueries.getUser(email);
     if (!user) {
-      throw new ApiError(404, MESSAGES.BAD_CREDENTIAL);
+      throw new ApiError(404, 'signin.email_not_found');
     } else {
       const passwordMatches = await bcrypt.compare(password, user.password);
       if (!passwordMatches) {
-        throw new ApiError(404, MESSAGES.BAD_CREDENTIAL);
+        throw new ApiError(404, 'signin.password_invalid_back');
       } else {
         const token = signToken({ id: user.id, email: user.email });
 
