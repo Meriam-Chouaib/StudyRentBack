@@ -138,7 +138,7 @@ const addPostToFavorites = async (userId: number, postId: number): Promise<Post>
       throw new Error(`Post with ID ${postId} not found.`);
     }
     const listFavorite = await getListFavorite({ userId: userId });
-    if (listFavorite.some((item) => item.id === post.id)) {
+    if (listFavorite.data.favoritPosts.some((item) => item.id === post.id)) {
       console.log('exists');
       throw new Error(`Post with ID ${postId} already exists in the favorite list.`);
     }
@@ -149,30 +149,27 @@ const addPostToFavorites = async (userId: number, postId: number): Promise<Post>
     throw new ApiError(e.statusCode, e.message);
   }
 };
-const getListFavorite = async ({
-  page,
-  rowsPerPage,
-  userId,
-}: GetFavoriteListParams): Promise<Post[]> => {
+const getListFavorite = async ({ page, rowsPerPage, userId }: GetFavoriteListParams) => {
   try {
     console.log('user idd', userId);
 
-    const favoritPosts: Post[] = [];
-    const favorites: Favorite[] = await postQueries.getListFavorite({
+    const posts: Post[] = [];
+    const listFavorites: Favorite[] = await postQueries.getListFavorite({
       page,
       rowsPerPage,
       userId,
     });
-    console.log(favorites);
+    console.log(listFavorites);
     // return favorites;
 
     await Promise.all(
-      favorites.map(async (favorit: Favorite) => {
+      listFavorites.map(async (favorit: Favorite) => {
         const post = await postQueries.getPostById(Number(favorit.postId));
-        favoritPosts.push(post);
+        posts.push(post);
       }),
     );
-    return favoritPosts;
+    const localizations = await geocodeAddresses(posts);
+    return new ApiResponse(httpStatus.OK, { posts, localizations }, 'List of posts');
   } catch (e) {
     console.log(e);
 

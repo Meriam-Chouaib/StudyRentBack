@@ -6,7 +6,6 @@ import ApiError from '../errors/ApiError';
 import { postSchema } from '../Schemas/post/post.validation';
 import { Filter } from '../types/post/post.types';
 import { Request } from '../types/types';
-import { geocodeAddress, geocodeAddresses } from '../services/geocodeService';
 
 //------------------------- create post --------------------------------------
 /**
@@ -162,12 +161,13 @@ const getFavoriteList = async (req: Request, res: Response, next: NextFunction):
   const { page, rowsPerPage } = req.query;
 
   try {
-    const result = await postService.getListFavorite({
-      page: Number(page),
-      rowsPerPage: Number(rowsPerPage),
-      userId: Number(userId),
-    });
-    res.status(200).send({ data: result });
+    res.status(200).send(
+      await postService.getListFavorite({
+        page: Number(page),
+        rowsPerPage: Number(rowsPerPage),
+        userId: Number(userId),
+      }),
+    );
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

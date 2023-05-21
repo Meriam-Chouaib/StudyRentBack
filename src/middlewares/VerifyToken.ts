@@ -13,8 +13,10 @@ export const verifyToken = async (req: Request, res: Response, next: NextFunctio
   }
 
   try {
-    var decoded = decodeToken(token, next);
-    req.userId = decoded.id;
+    var decoded = await decodeToken(token, next);
+    if (decoded) {
+      req.userId = decoded.id;
+    }
     next();
   } catch (err) {
     next(err);
