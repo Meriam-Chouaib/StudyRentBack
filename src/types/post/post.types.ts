@@ -24,3 +24,7 @@ export interface minMaxInterval {
   min: number;
   max: number;
 }
+export interface Localization {
+  longitude: number;
+  latitude: number;
+}

@@ -19,3 +19,9 @@ export const postSchema = Joi.object().keys({
   postal_code: Joi.string().required(),
   files: Joi.any().required(),
 });
+
+export const addressSchema = Joi.object().keys({
+  state: Joi.string().required().min(3),
+  postal_code: Joi.string().required(),
+  city: Joi.string().required().min(3),
+});

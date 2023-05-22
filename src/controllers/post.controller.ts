@@ -1,14 +1,11 @@
-import { error } from './../logger/logger';
-import { Files, Post, Prisma } from '@prisma/client';
+import { Post } from '@prisma/client';
 import { Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import * as postService from '../services/post.service';
 import ApiError from '../errors/ApiError';
 import { postSchema } from '../Schemas/post/post.validation';
-import { getTokenFromHeaders } from '../utils';
 import { Filter } from '../types/post/post.types';
 import { Request } from '../types/types';
-import ApiResponse from '../utils/ApiResponse';
 
 //------------------------- create post --------------------------------------
 /**
@@ -23,8 +20,6 @@ import ApiResponse from '../utils/ApiResponse';
 const createPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const filesData = req.files as Express.Multer.File[];
-    console.log('req bodyyyy', req.body);
-
     const data: Post = Object.assign({} as Post, JSON.parse(req.body.post));
 
     const { value, error } = postSchema.validate(data);
@@ -40,7 +35,6 @@ const createPost = async (req: Request, res: Response, next: NextFunction): Prom
 const getPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { page, rowsPerPage, filter } = req.query;
-    console.log('filter from controller', filter);
 
     res.status(200).send(
       await postService.getPosts({
@@ -60,8 +54,6 @@ const getPostsByOwner = async (req: Request, res: Response, next: NextFunction):
     const page = Number(req.query.page) || 1;
     const rowsPerPage = Number(req.query.rowsPerPage) || 9;
     const title = req.query.title as string;
-
-    console.log('id useer', req.userId);
 
     const idOwner = Number(req.userId);
 
@@ -169,12 +161,13 @@ const getFavoriteList = async (req: Request, res: Response, next: NextFunction):
   const { page, rowsPerPage } = req.query;
 
   try {
-    const result = await postService.getListFavorite({
-      page: Number(page),
-      rowsPerPage: Number(rowsPerPage),
-      userId: Number(userId),
-    });
-    res.status(200).send({ data: result });
+    res.status(200).send(
+      await postService.getListFavorite({
+        page: Number(page),
+        rowsPerPage: Number(rowsPerPage),
+        userId: Number(userId),
+      }),
+    );
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
