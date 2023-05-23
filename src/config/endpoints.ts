@@ -18,7 +18,9 @@ export const Endpoints = {
     ListFavoris: '/favoris/:id',
   },
   user: {
+    ROOT: '/users',
     ALL: '/users',
+    detail: '/:id',
   },
   appartement: {
     ROOT: '/appartements',
