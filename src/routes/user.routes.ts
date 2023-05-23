@@ -1,19 +1,12 @@
 import express from 'express';
 import { Endpoints } from '../config/endpoints';
-import { AuthController } from '../controllers';
+import { userController } from '../controllers';
+import { verifyToken } from '../middlewares/VerifyToken';
 
 const userRouter = express.Router();
 
-/**
- * @swagger
- * /getUserById:
- *   user:
- *     summary: getUserById
- *     description: getUserById
- *       200:
- *         description: getUserById successfully!
- */
-
-userRouter.get(Endpoints.user.detail, AuthController.signUp);
+userRouter.patch(Endpoints.user.detail, verifyToken, userController.editUser);
+userRouter.get(Endpoints.ROOT, verifyToken, userController.getAllUsers);
+userRouter.get(Endpoints.user.detail, verifyToken, userController.getUserById);
 
 export default userRouter;

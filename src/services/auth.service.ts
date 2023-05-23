@@ -50,4 +50,13 @@ const signIn = async (email: string, password: string) => {
   }
 };
 
-export { signUp, signIn };
+const updateUser = async (userId: number, user: User) => {
+  try {
+    const userUpdated = await userQueries.updateUser(userId, user);
+    return new ApiResponse(httpStatus.OK, userUpdated, 'user updated succiusfully!');
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { signUp, signIn, updateUser };

@@ -135,12 +135,17 @@ const addPostToFavorites = async (userId: number, postId: number): Promise<Post>
   try {
     const post = await postQueries.getPostById(postId);
     if (!post) {
-      throw new Error(`Post with ID ${postId} not found.`);
+      throw new ApiError(404, `Post with ID ${postId} not found.`);
     }
     const listFavorite = await getListFavorite({ userId: userId });
-    if (listFavorite.data.favoritPosts.some((item) => item.id === post.id)) {
-      console.log('exists');
-      throw new Error(`Post with ID ${postId} already exists in the favorite list.`);
+
+    if (
+      listFavorite &&
+      listFavorite.data &&
+      Array.isArray(listFavorite.data.posts) &&
+      listFavorite.data.posts.findIndex((item) => item.id === post.id) !== -1
+    ) {
+      throw new ApiError(409, `Post with ID ${postId} already exists in the favorite list.`);
     }
     return await postQueries.addPostToFavorite(userId, postId);
   } catch (e) {

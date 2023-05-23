@@ -13,11 +13,12 @@ model User {
   password  String
   image     String
   phone String?
+  university String?
   isLogged Boolean  @default(true)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @default(now())
   posts    Post[]
-   statut    user_statut @default(OFFLINE)
+  statut    user_statut @default(OFFLINE)
   role      user_role 
   favorites Favorite[]
 }

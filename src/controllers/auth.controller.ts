@@ -13,12 +13,11 @@ import * as authService from '../services/auth.service';
  */
 
 const signUp = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const data: User = req.body as User;
-  try {  
+  const data: User = req.body as User;
+  try {
     const user = await authService.signUp(data);
     res.status(200).send(user);
   } catch (err) {
-
     next(err);
   }
 };
@@ -33,11 +32,10 @@ const signUp = async (req: Request, res: Response, next: NextFunction): Promise<
 const signIn = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
   try {
-  const result =     await authService.signIn(email, password);
- res.status(200).send(result);
+    const result = await authService.signIn(email, password);
+    res.status(200).send(result);
   } catch (err: any) {
-  
-     next(err);
+    next(err);
   }
 };
 
