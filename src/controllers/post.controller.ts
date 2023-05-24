@@ -51,11 +51,12 @@ const getPosts = async (req: Request, res: Response, next: NextFunction): Promis
 // get posts by owner
 const getPostsByOwner = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const page = Number(req.query.page) || 1;
-    const rowsPerPage = Number(req.query.rowsPerPage) || 9;
+    const page = Number(req.query.page);
+    const rowsPerPage = Number(req.query.rowsPerPage);
     const title = req.query.title as string;
 
     const idOwner = Number(req.userId);
+    console.log('from controller', idOwner);
 
     const filter: Filter = {
       title: title,
@@ -186,10 +187,64 @@ const deletePostFromFavoris = async (
     res.status(e.statusCode).send(e.message);
   }
 };
+
+// _______________________________________________________________ price max and min______________________________________________________
+const getMaximalPostPrice = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const maxPrice = await postService.getMaximalPostPrice();
+    res.status(httpStatus.OK).send(maxPrice);
+  } catch (e) {
+    res.status(e.statusCode).send(e.message);
+  }
+};
+const getMinimalPostPrice = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    res.status(httpStatus.OK).send(await postService.getMinimalPostPrice());
+  } catch (e) {
+    res.status(e.statusCode).send(e.message);
+  }
+};
+const getMinimalPostSurface = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const minSurface = await postService.getMinimalPostSurface();
+    res.status(httpStatus.OK).send(minSurface);
+  } catch (e) {
+    res.status(e.statusCode).send(e.message);
+  }
+};
+const getMaximalPostSurface = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const maxSurface = await postService.getMaximalPostSurface();
+    res.status(httpStatus.OK).send(maxSurface);
+  } catch (e) {
+    res.status(e.statusCode).send(e.message);
+  }
+};
+
 export {
   createPost,
   getPosts,
   getPostById,
+  getMaximalPostPrice,
+  getMinimalPostPrice,
+  getMinimalPostSurface,
+  getMaximalPostSurface,
   deletePost,
   editPost,
   getPostsByOwner,

@@ -235,3 +235,67 @@ export const deletePostFromFavorisList = async (id: number): Promise<void> => {
     console.log(err);
   }
 };
+export const getMinimalPostPrice = async (): Promise<Prisma.Decimal> => {
+  try {
+    const minimalPrice = await db.post.findFirst({
+      orderBy: {
+        price: 'asc',
+      },
+      select: {
+        price: true,
+      },
+    });
+
+    return minimalPrice?.price;
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const getMaximalPostPrice = async (): Promise<Prisma.Decimal> => {
+  try {
+    const maximalPrice = await db.post.findFirst({
+      orderBy: {
+        price: 'desc',
+      },
+      select: {
+        price: true,
+      },
+    });
+
+    return maximalPrice?.price;
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const getMinimalPostSurface = async (): Promise<number> => {
+  try {
+    const minimalSurface = await db.post.findFirst({
+      orderBy: {
+        price: 'asc',
+      },
+      select: {
+        surface: true,
+      },
+    });
+
+    return minimalSurface?.surface;
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const getMaximalPostSurface = async (): Promise<number> => {
+  try {
+    const maximalPrice = await db.post.findFirst({
+      orderBy: {
+        price: 'desc',
+      },
+      select: {
+        surface: true,
+      },
+    });
+
+    return maximalPrice?.surface;
+  } catch (err) {
+    console.log(err);
+  }
+};

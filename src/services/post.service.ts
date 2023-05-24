@@ -1,4 +1,4 @@
-import { Favorite, Files, Post } from '@prisma/client';
+import { Favorite, Files, Post, Prisma } from '@prisma/client';
 // queries
 import * as postQueries from '../queries/post.queries';
 import * as userQueries from '../queries/user.queries';
@@ -37,8 +37,8 @@ const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
       filter,
     });
     const localizations = await geocodeAddresses(posts);
-
-    return new ApiResponse(httpStatus.OK, { posts, localizations }, 'List of posts');
+    const nbPages = Math.ceil(posts.length / rowsPerPage);
+    return new ApiResponse(httpStatus.OK, { posts, localizations, nbPages }, 'List of posts');
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
@@ -48,8 +48,11 @@ const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
 
 const getPostsByOwner = async ({ page, rowsPerPage, filter, idOwner }: GetPostsParams) => {
   try {
+    console.log(idOwner);
+
     const posts = await postQueries.getPostsByOwner({ page, rowsPerPage, filter, idOwner });
     const localizations = await geocodeAddresses(posts);
+    const nbPages = Math.ceil(posts.length / rowsPerPage);
 
     return new ApiResponse(
       httpStatus.OK,
@@ -164,6 +167,8 @@ const getListFavorite = async ({ page, rowsPerPage, userId }: GetFavoriteListPar
       rowsPerPage,
       userId,
     });
+    const nbPages = Math.ceil(posts.length / rowsPerPage);
+
     console.log(listFavorites);
     // return favorites;
 
@@ -174,7 +179,7 @@ const getListFavorite = async ({ page, rowsPerPage, userId }: GetFavoriteListPar
       }),
     );
     const localizations = await geocodeAddresses(posts);
-    return new ApiResponse(httpStatus.OK, { posts, localizations }, 'List of posts');
+    return new ApiResponse(httpStatus.OK, { posts, localizations, nbPages }, 'List of posts');
   } catch (e) {
     console.log(e);
 
@@ -194,7 +199,54 @@ const deletePostFromFavoriteList = async (postId: number, userId: number): Promi
     throw new ApiError(e.statusCode, e.message);
   }
 };
+
+const getMinimalPostPrice = async (): Promise<ApiResponse> => {
+  try {
+    return new ApiResponse(httpStatus.OK, await postQueries.getMinimalPostPrice(), 'min price');
+  } catch (e) {
+    console.log(e);
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+const getMaximalPostPrice = async (): Promise<ApiResponse> => {
+  try {
+    return new ApiResponse(httpStatus.OK, await postQueries.getMaximalPostPrice(), 'List of posts');
+  } catch (e) {
+    console.log(e);
+    throw new ApiError(e.statusCode, e.message);
+  }
+};
+const getMinimalPostSurface = async (): Promise<ApiResponse> => {
+  try {
+    return new ApiResponse(
+      httpStatus.OK,
+      await postQueries.getMinimalPostSurface(),
+      'Minimal post surface',
+    );
+  } catch (e) {
+    console.log(e);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to retrieve minimal post surface');
+  }
+};
+
+const getMaximalPostSurface = async (): Promise<ApiResponse> => {
+  try {
+    return new ApiResponse(
+      httpStatus.OK,
+      await postQueries.getMaximalPostSurface(),
+      'Maximal post surface',
+    );
+  } catch (e) {
+    console.log(e);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to retrieve maximal post surface');
+  }
+};
+
 export {
+  getMaximalPostSurface,
+  getMinimalPostSurface,
+  getMaximalPostPrice,
+  getMinimalPostPrice,
   createPost,
   getPosts,
   getPostById,
