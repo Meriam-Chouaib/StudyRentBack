@@ -85,6 +85,34 @@ export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): P
     console.log(err);
   }
 };
+export const getTotalPosts = async (filter: Filter): Promise<number> => {
+  try {
+    let filters = {};
+    if (filter) {
+      const filterObject: FilterFields = JSON.parse(filter.toString());
+      const { nb_rooms, price, surface, title, city } = filterObject;
+      console.log(filterObject);
+      filters = {
+        ...filters,
+        where: applyFilters<FilterFields>(filterObject),
+      };
+    }
+
+    filters = {
+      ...filters,
+      include: {
+        files: true,
+      },
+    };
+
+    const allposts = await db.post.findMany(filters);
+    console.log('allposts', allposts);
+
+    return allposts.length;
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 // get posts by owner
 
@@ -105,6 +133,21 @@ export const getPostsByOwner = async ({
         files: true,
       },
     });
+  } catch (err) {
+    console.log(err);
+  }
+};
+export const getTotalPostsByOwner = async (filter, idOwner): Promise<number> => {
+  try {
+    const posts = await db.post.findMany({
+      where: {
+        posterId: idOwner,
+      },
+      include: {
+        files: true,
+      },
+    });
+    return posts.length;
   } catch (err) {
     console.log(err);
   }
