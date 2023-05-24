@@ -43,6 +43,22 @@ postRouter.post(
 
 postRouter.get(Endpoints.ROOT, validateParams(paginationSchema), PostController.getPosts);
 
+// _____________________________________________________________ get Price maximal___________________________________________________________
+
+postRouter.get(Endpoints.post.MAX_PRICE, PostController.getMaximalPostPrice);
+
+// _____________________________________________________________ get surface maximal___________________________________________________________
+
+postRouter.get(Endpoints.post.MAX_SURFACE, PostController.getMaximalPostSurface);
+
+// _____________________________________________________________ get Price minimal___________________________________________________________
+
+postRouter.get(Endpoints.post.MIN_PRICE, PostController.getMinimalPostPrice);
+
+// _____________________________________________________________ get surface minimal___________________________________________________________
+
+postRouter.get(Endpoints.post.MIN_SURFACE, PostController.getMinimalPostSurface);
+
 /**
  * @swagger
  * /:
@@ -70,10 +86,10 @@ postRouter.get(Endpoints.post.LIST, verifyToken, PostController.getPostsByOwner)
  * @swagger
  * /:
  *   posts:
- *     summary: Get list of posts
- *     description: Get list of posts
+ *     summary: Get post by id
+ *     description: Get post by id
  *       200:
- *         description: list of posts
+ *         description: post returns successfully
  */
 
 postRouter.get(Endpoints.post.SINGLE, PostController.getPostById);

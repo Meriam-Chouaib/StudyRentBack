@@ -16,6 +16,10 @@ export const Endpoints = {
     FILES: '/files/:id',
     FAVORIS: '/favoris/:userId/:postId',
     ListFavoris: '/favoris/:id',
+    MIN_PRICE: '/minPrice',
+    MAX_PRICE: '/maxPrice',
+    MIN_SURFACE: '/minSurface',
+    MAX_SURFACE: '/maxSurface',
   },
   user: {
     ROOT: '/users',
