@@ -37,8 +37,15 @@ const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
       filter,
     });
     const localizations = await geocodeAddresses(posts);
-    const nbPages = Math.ceil(posts.length / rowsPerPage);
-    return new ApiResponse(httpStatus.OK, { posts, localizations, nbPages }, 'List of posts');
+    const nbPosts = await postQueries.getTotalPosts(filter);
+
+    const nbPages = Math.ceil(nbPosts / rowsPerPage);
+
+    return new ApiResponse(
+      httpStatus.OK,
+      { posts, localizations, nbPages: Number(nbPages), nbPosts, currentPage: Number(page) },
+      'List of posts',
+    );
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
@@ -52,11 +59,13 @@ const getPostsByOwner = async ({ page, rowsPerPage, filter, idOwner }: GetPostsP
 
     const posts = await postQueries.getPostsByOwner({ page, rowsPerPage, filter, idOwner });
     const localizations = await geocodeAddresses(posts);
-    const nbPages = Math.ceil(posts.length / rowsPerPage);
+    const nbPosts = await postQueries.getTotalPostsByOwner(filter, idOwner);
+
+    const nbPages = Math.ceil(nbPosts / rowsPerPage);
 
     return new ApiResponse(
       httpStatus.OK,
-      { posts, localizations },
+      { posts, localizations, nbPages: Number(nbPages), nbPosts, currentPage: Number(page) },
       'List of posts for the owner with id: ' + idOwner,
     );
   } catch (e) {
