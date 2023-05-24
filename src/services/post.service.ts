@@ -176,10 +176,11 @@ const getListFavorite = async ({ page, rowsPerPage, userId }: GetFavoriteListPar
       rowsPerPage,
       userId,
     });
-    const nbPages = Math.ceil(posts.length / rowsPerPage);
+    const nbPosts = await postQueries.getTotalListFavorite(userId);
+
+    const nbPages = Math.ceil(nbPosts / rowsPerPage);
 
     console.log(listFavorites);
-    // return favorites;
 
     await Promise.all(
       listFavorites.map(async (favorit: Favorite) => {

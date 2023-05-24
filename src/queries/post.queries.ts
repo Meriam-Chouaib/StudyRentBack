@@ -266,6 +266,30 @@ export const getListFavorite = async ({
     console.log(err);
   }
 };
+
+export const getTotalListFavorite = async (userId: number): Promise<number> => {
+  try {
+    let filters = {};
+
+    filters = {
+      ...filters,
+      include: {
+        files: true,
+      },
+    };
+
+    filters = {
+      ...filters,
+      where: { userId: userId },
+      include: { post: true },
+    };
+    const posts = await db.favorite.findMany(filters);
+    return posts.length;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 export const deletePostFromFavorisList = async (id: number): Promise<void> => {
   try {
     await db.favorite.delete({
