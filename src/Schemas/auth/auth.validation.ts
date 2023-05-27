@@ -6,12 +6,15 @@ const registerBody: Record<keyof SignUpUser, any> = {
   password: Joi.string()
     .required()
     .pattern(new RegExp('^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,30}$'))
-    .message('signupForm.password_invalid'),
+    .message('signup.password_invalid_back'),
   username: Joi.string().required().max(30),
   statut: Joi.string().required(),
   role: Joi.string().required(),
   image: Joi.string().optional(),
   isLogged: Joi.optional(),
+  phone: Joi.optional(),
+  university: Joi.optional(),
+  universityAddress: Joi.optional(),
 };
 
 export const register = {

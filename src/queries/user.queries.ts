@@ -39,6 +39,7 @@ export const updateUser = async (userId: number, user: User) => {
       where: { id: userId },
       data: user,
     });
+
     return updatedUser;
   } catch (error) {
     console.log(error);

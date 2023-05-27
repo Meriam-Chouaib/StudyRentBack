@@ -3,12 +3,14 @@ import { Favorite, Files, Post, Prisma } from '@prisma/client';
 import * as postQueries from '../queries/post.queries';
 import * as userQueries from '../queries/user.queries';
 import * as fileQueries from '../queries/file.queries';
+import * as userService from '../services/user.service';
 import ApiError from '../errors/ApiError';
 import httpStatus from 'http-status';
 
 import ApiResponse from '../utils/ApiResponse';
 import { Filter, GetFavoriteListParams, GetPostsParams } from '../types/post/post.types';
-import { geocodeAddress, geocodeAddresses } from './geocodeService';
+import { geocodeAddress, geocodeAddresses } from './geocode.service';
+import { splitAddress } from '../utils/splitAddress';
 
 // create post
 const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
@@ -29,28 +31,48 @@ const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
 };
 
 // _____________________________________________  get posts with filter  ______________________________________________________________________
-const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams) => {
+const getPosts = async (filterFields: GetPostsParams) => {
   try {
+    console.log('filterFields', filterFields);
+    if (filterFields.universityAddress) {
+      const [city] = splitAddress(filterFields.universityAddress);
+      filterFields = { ...filterFields, universityAddress: city };
+    }
+
     const posts = await postQueries.getPosts({
-      page,
-      rowsPerPage,
-      filter,
+      ...filterFields,
     });
+
     const localizations = await geocodeAddresses(posts);
-    const nbPosts = await postQueries.getTotalPosts(filter);
+    const nbPosts = (await postQueries.getTotalPosts(filterFields.filter)).nbPosts;
 
-    const nbPages = Math.ceil(nbPosts / rowsPerPage);
+    const nbPages = Math.ceil(nbPosts / filterFields.rowsPerPage);
 
-    return new ApiResponse(
-      httpStatus.OK,
-      { posts, localizations, nbPages: Number(nbPages), nbPosts, currentPage: Number(page) },
-      'List of posts',
-    );
+    // console.log('posts', posts);
+    // console.log('localizations', localizations);
+    // console.log('nb_posts', nbPosts);
+    // console.log('nbPages', Number(nbPages));
+    // console.log('page', Number(filterFields.page));
+
+    return {
+      posts,
+      localizations,
+      nbPages: Number(nbPages),
+      nbPosts,
+      currentPage: Number(filterFields.page),
+    };
   } catch (e) {
-    throw new ApiError(e.statusCode, e.message);
+    console.log(e);
   }
 };
-
+const getAllListPosts = async () => {
+  try {
+    const posts = await postQueries.getTotalPosts(undefined);
+    return posts;
+  } catch (e) {
+    console.log(e);
+  }
+};
 // _____________________________________________  get posts by owner  ______________________________________________________________________
 
 const getPostsByOwner = async ({ page, rowsPerPage, filter, idOwner }: GetPostsParams) => {
@@ -267,4 +289,5 @@ export {
   addPostToFavorites,
   getListFavorite,
   deletePostFromFavoriteList,
+  getAllListPosts,
 };

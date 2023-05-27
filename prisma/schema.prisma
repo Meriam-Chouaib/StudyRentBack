@@ -21,6 +21,7 @@ model User {
   statut    user_statut @default(OFFLINE)
   role      user_role 
   favorites Favorite[]
+  universityAddress String?
 }
 
 enum user_statut {

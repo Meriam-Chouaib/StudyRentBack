@@ -3,6 +3,8 @@ import { User } from '@prisma/client';
 import * as userQueries from '../queries/user.queries';
 import ApiError from '../errors/ApiError';
 import httpStatus from 'http-status';
+import { universities } from '../config/addresses_universities';
+import { getUniversityAddress } from './geocode.service';
 
 const editUser = async (userId: number, user: User) => {
   try {
@@ -10,6 +12,17 @@ const editUser = async (userId: number, user: User) => {
 
     if (!userToUpdate) {
       throw new ApiError(httpStatus.NOT_FOUND, `User with id ${userId} not found`);
+    }
+    if (user.university) {
+      // Retrieve the address of the university from your backend or database
+      const universityAddress = await getUniversityAddress(user.university);
+
+      if (!universityAddress) {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid university selected');
+        console.log('Invalid university selected');
+      }
+
+      user.universityAddress = universityAddress;
     }
     if (user.email !== userToUpdate.email) {
       const existingUser = await userQueries.getUserByEmail(user.email);
@@ -19,6 +32,7 @@ const editUser = async (userId: number, user: User) => {
     }
 
     const updatedInfoUser = await userQueries.updateUser(userId, user);
+    console.log('updatedInfoUser', updatedInfoUser);
 
     return updatedInfoUser;
   } catch (e) {
@@ -43,4 +57,5 @@ const getUserById = async (userId: number) => {
 
   return user;
 };
+
 export { editUser, getAllUsers, getUserById };

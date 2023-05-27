@@ -1,11 +1,15 @@
+import { getTotalPosts } from './../queries/post.queries';
 import { Post } from '@prisma/client';
 import { Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import * as postService from '../services/post.service';
 import ApiError from '../errors/ApiError';
 import { postSchema } from '../Schemas/post/post.validation';
-import { Filter } from '../types/post/post.types';
+import { Filter, GetPostsParams } from '../types/post/post.types';
 import { Request } from '../types/types';
+import * as geoCodeService from '../services/geocode.service';
+import * as userService from '../services/user.service';
+import ApiResponse from '../utils/ApiResponse';
 
 //------------------------- create post --------------------------------------
 /**
@@ -30,25 +34,58 @@ const createPost = async (req: Request, res: Response, next: NextFunction): Prom
     next(e);
   }
 };
-// get posts
+// ____________________________________get posts_______________________
 
 const getPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, rowsPerPage, filter } = req.query;
+    const { page, rowsPerPage, filter, universityAddress, idOwner } = req.query;
 
-    res.status(200).send(
-      await postService.getPosts({
-        page: Number(page),
-        rowsPerPage: Number(rowsPerPage),
-        filter: filter as Filter,
-      }),
-    );
+    let filterFields: GetPostsParams = {
+      page: Number(page),
+      rowsPerPage: Number(rowsPerPage),
+      // filter: filter as Filter,
+    };
+    console.log('filterFields controller', filterFields);
+
+    if (filter) {
+      console.log('filter', filter);
+      filterFields = { ...filterFields, filter: filter as Filter };
+    }
+
+    if (universityAddress) {
+      filterFields = { ...filterFields, universityAddress: universityAddress as string };
+    }
+    if (idOwner) {
+      filterFields = { ...filterFields, idOwner: Number(idOwner) };
+    }
+
+    const result = await postService.getPosts(filterFields);
+    // console.log('result controller', result);
+    return new ApiResponse(httpStatus.OK, result, 'data received successfully!').send(res);
+
+    // res.status(200).send(result);
   } catch (e) {
-    throw new ApiError(e.statusCode, e.message);
+    console.log(e);
   }
 };
+// ____________________________________ getNearestPostsToUniversity_________________________
+const getNearestPostsToUniversity = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  const userId = Number(req.params.id);
+  const posts = (await postService.getAllListPosts()).posts;
 
-// get posts by owner
+  const universityAddress = (await userService.getUserById(userId)).universityAddress;
+  const postsNearest = await geoCodeService.calculateNearestPostsToUniversity(
+    universityAddress,
+    posts,
+  );
+  res.status(200).send(postsNearest);
+  console.log('postsNearest', postsNearest);
+};
+// ____________________________________get posts by owner___________________________________
 const getPostsByOwner = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const page = Number(req.query.page);
@@ -75,7 +112,7 @@ const getPostsByOwner = async (req: Request, res: Response, next: NextFunction):
   }
 };
 
-// get post by id
+// ____________________________________get post by id_____________________
 const getPostById = async (
   req: Request,
   res: Response,
@@ -252,4 +289,5 @@ export {
   addPostToFavorite,
   getFavoriteList,
   deletePostFromFavoris,
+  getNearestPostsToUniversity,
 };

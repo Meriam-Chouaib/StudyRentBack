@@ -20,6 +20,7 @@ export const Endpoints = {
     MAX_PRICE: '/maxPrice',
     MIN_SURFACE: '/minSurface',
     MAX_SURFACE: '/maxSurface',
+    NEAR_POSTS: '/near/:id',
   },
   user: {
     ROOT: '/users',
