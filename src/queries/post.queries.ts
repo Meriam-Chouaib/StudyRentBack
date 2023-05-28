@@ -276,15 +276,11 @@ export const getListFavorite = async ({
         ...filters,
         skip: (page - 1) * rowsPerPage,
         take: rowsPerPage,
-        include: {
-          files: true,
-        },
       };
     }
     filters = {
       ...filters,
       where: { userId: userId },
-      include: { post: true },
     };
     return await db.favorite.findMany(filters);
   } catch (err) {
@@ -298,15 +294,7 @@ export const getTotalListFavorite = async (userId: number): Promise<number> => {
 
     filters = {
       ...filters,
-      include: {
-        files: true,
-      },
-    };
-
-    filters = {
-      ...filters,
       where: { userId: userId },
-      include: { post: true },
     };
     const posts = await db.favorite.findMany(filters);
     return posts.length;

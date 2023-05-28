@@ -195,20 +195,26 @@ const getListFavorite = async ({ page, rowsPerPage, userId }: GetFavoriteListPar
       rowsPerPage,
       userId,
     });
+
     const nbPosts = await postQueries.getTotalListFavorite(userId);
 
     const nbPages = Math.ceil(nbPosts / rowsPerPage);
+    if (listFavorites) {
+      await Promise.all(
+        listFavorites.map(async (favorit: Favorite) => {
+          const post = await postQueries.getPostById(Number(favorit.postId));
+          if (post !== null) {
+            posts.push(post);
+          }
+        }),
+      );
+    }
 
-    console.log(listFavorites);
-
-    await Promise.all(
-      listFavorites.map(async (favorit: Favorite) => {
-        const post = await postQueries.getPostById(Number(favorit.postId));
-        posts.push(post);
-      }),
+    return new ApiResponse(
+      httpStatus.OK,
+      { posts, localizations: posts ? await geocodeAddresses(posts) : [], nbPages: nbPages },
+      'List of posts',
     );
-    const localizations = await geocodeAddresses(posts);
-    return new ApiResponse(httpStatus.OK, { posts, localizations, nbPages }, 'List of posts');
   } catch (e) {
     console.log(e);
 
