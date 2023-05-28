@@ -60,7 +60,6 @@ const getPosts = async (req: Request, res: Response, next: NextFunction): Promis
     }
 
     const result = await postService.getPosts(filterFields);
-    // console.log('result controller', result);
     return new ApiResponse(httpStatus.OK, result, 'data received successfully!').send(res);
 
     // res.status(200).send(result);
