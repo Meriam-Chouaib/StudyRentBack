@@ -183,5 +183,6 @@ postRouter.post(
   verifyToken,
   geocodeController.geocodeAddresse,
 );
+postRouter.get(Endpoints.post.NEAR_POSTS, verifyToken, PostController.getNearestPostsToUniversity);
 
 export default postRouter;

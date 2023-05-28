@@ -57,9 +57,17 @@ export const createPost = async (post: Post, filesData: Express.Multer.File[]): 
 
 // get posts filtred
 
-export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): Promise<Post[]> => {
+export const getPosts = async ({
+  page,
+  rowsPerPage,
+  filter,
+  universityAddress,
+  idOwner,
+}: GetPostsParams): Promise<Post[]> => {
   try {
-    let filters = {};
+    console.log('filteeeeeeeeeerr', filter);
+
+    let filters: any = { where: {} }; // Initialize filters with a default value
     if (page && rowsPerPage) {
       filters = {
         ...filters,
@@ -71,6 +79,8 @@ export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): P
       };
     }
     if (filter) {
+      console.log('filter', filter);
+
       const filterObject: FilterFields = JSON.parse(filter.toString());
       const { nb_rooms, price, surface, title, city } = filterObject;
       console.log(filterObject);
@@ -79,16 +89,31 @@ export const getPosts = async ({ page, rowsPerPage, filter }: GetPostsParams): P
         where: applyFilters<FilterFields>(filterObject),
       };
     }
+    if (universityAddress) {
+      filters = {
+        ...filters,
+        where: {
+          ...filters.where,
+          city: {
+            equals: universityAddress,
+          },
+        },
+      };
+    }
 
     return await db.post.findMany(filters);
   } catch (err) {
     console.log(err);
   }
 };
-export const getTotalPosts = async (filter: Filter): Promise<number> => {
+export interface responseGetTotalPosts {
+  nbPosts: number;
+  posts: Post[];
+}
+export const getTotalPosts = async (filter: Filter): Promise<responseGetTotalPosts> => {
   try {
     let filters = {};
-    if (filter) {
+    if (filter && filter !== undefined) {
       const filterObject: FilterFields = JSON.parse(filter.toString());
       const { nb_rooms, price, surface, title, city } = filterObject;
       console.log(filterObject);
@@ -106,9 +131,9 @@ export const getTotalPosts = async (filter: Filter): Promise<number> => {
     };
 
     const allposts = await db.post.findMany(filters);
-    console.log('allposts', allposts);
+    // console.log('allposts', allposts);
 
-    return allposts.length;
+    return { nbPosts: allposts.length, posts: allposts };
   } catch (err) {
     console.log(err);
   }

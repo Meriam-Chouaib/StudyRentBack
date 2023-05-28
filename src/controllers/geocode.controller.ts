@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { geocodeAddress } from '../services/geocodeService';
+import { geocodeAddress } from '../services/geocode.service';
 import { ApiError } from '../errors';
 import { Localization } from '../types/post/post.types';
 import { Post } from '@prisma/client';

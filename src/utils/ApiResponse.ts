@@ -12,7 +12,7 @@ class ApiResponse {
   }
 
   send(res: Response) {
-    res.status(this.status).json(this.data);
+    res.status(this.status).json({ status: this.status, data: this.data, message: this.message });
   }
 }
 

@@ -6,6 +6,8 @@ export type GetPostsParams = {
   rowsPerPage: number;
   filter?: Filter;
   idOwner?: number;
+  idStudent?: number;
+  universityAddress?: string;
 };
 export type GetFavoriteListParams = {
   page?: number;
