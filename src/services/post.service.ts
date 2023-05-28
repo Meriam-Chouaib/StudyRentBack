@@ -44,15 +44,12 @@ const getPosts = async (filterFields: GetPostsParams) => {
     });
 
     const localizations = await geocodeAddresses(posts);
-    const nbPosts = (await postQueries.getTotalPosts(filterFields.filter)).nbPosts;
+
+    const nbPosts = filterFields.universityAddress
+      ? posts.length
+      : (await postQueries.getTotalPosts(filterFields.filter)).nbPosts;
 
     const nbPages = Math.ceil(nbPosts / filterFields.rowsPerPage);
-
-    // console.log('posts', posts);
-    // console.log('localizations', localizations);
-    // console.log('nb_posts', nbPosts);
-    // console.log('nbPages', Number(nbPages));
-    // console.log('page', Number(filterFields.page));
 
     return {
       posts,
