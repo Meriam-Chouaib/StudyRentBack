@@ -27,15 +27,17 @@ const editUser = async (req: Request, res: Response, next: NextFunction): Promis
 
 const getAllUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, rowsPerPage, search } = req.query;
+    const { page, rowsPerPage, search, role } = req.query;
     let filterFields: GetUsersParams = {
       page: Number(page),
       rowsPerPage: Number(rowsPerPage),
+      role: role as string,
     };
     if (search) filterFields = { ...filterFields, search: search as string };
     console.log('controller filterFields', filterFields);
 
     const allUsers = await userService.getAllUsers(filterFields);
+    // console.log(allUsers);
 
     res.status(httpStatus.OK).send(allUsers);
   } catch (e) {
