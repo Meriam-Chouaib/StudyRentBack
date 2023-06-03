@@ -6,4 +6,5 @@ export const paginationSchema = Joi.object().keys({
   idStudent: Joi.any().optional(),
   idOwner: Joi.any().optional(),
   universityAddress: Joi.any().optional(),
+  search: Joi.any().optional(),
 });

@@ -7,7 +7,7 @@ import httpStatus from 'http-status';
 import * as MESSAGES from '../utils/globals';
 import ApiResponse from '../utils/ApiResponse';
 
-//-------------------------sign up ------------
+//---------------------------------sign up -----------------------
 const signUp = async (data: User) => {
   try {
     if (await userQueries.getUser(data.email)) {
@@ -26,7 +26,7 @@ const signUp = async (data: User) => {
   }
 };
 
-//-------------------------sign in ------------
+//-----------------------------------sign in ---------------
 const signIn = async (email: string, password: string) => {
   try {
     const user = await userQueries.getUser(email);
@@ -44,11 +44,10 @@ const signIn = async (email: string, password: string) => {
       }
     }
   } catch (e) {
-    console.log('serviiiiiiiiiiiiiiiiiiiiiiiiice', e);
-
     throw new ApiError(e.statusCode, e.message);
   }
 };
+//------------------------------update user------------------
 
 const updateUser = async (userId: number, user: User) => {
   try {
