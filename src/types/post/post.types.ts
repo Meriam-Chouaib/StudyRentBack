@@ -21,6 +21,7 @@ export interface Filter {
   price?: number[];
   surface?: number[];
   city?: string;
+  search?: string;
 }
 export interface minMaxInterval {
   min: number;
