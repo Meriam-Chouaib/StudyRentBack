@@ -17,7 +17,8 @@ const signUp = async (data: User) => {
       data.password = hash;
       data.image = 'test.png';
       const user = await userQueries.signUp(data);
-      const token = signToken({ id: data.id, email: data.email });
+
+      const token = signToken({ id: user.id, email: data.email });
       const result = { user, token };
       return new ApiResponse(200, result, 'User created successfully!');
     }
