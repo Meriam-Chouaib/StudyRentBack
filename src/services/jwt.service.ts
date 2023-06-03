@@ -5,12 +5,6 @@ interface JWTPayload {
   id: number;
   email: string;
 }
-// const signToken = (id: number) => {
-//   const token = jwt.sign({ payload: id }, config.jwtSecret, {
-//     expiresIn: config.jwtExpiration,
-//   });
-//   return token;
-// };
 
 const signToken = (payload: JWTPayload) => {
   const token = jwt.sign(payload, config.jwtSecret, {
