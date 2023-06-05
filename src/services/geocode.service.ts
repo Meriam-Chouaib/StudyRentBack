@@ -24,7 +24,7 @@ export async function geocodeAddress(
       throw new ApiError(500, 'Error in geocoding');
     }
   } catch (error) {
-    console.log('errrrrrrrrrrrrrrroor geocoodeiing', error);
+    console.log('error in geocoding', error);
   }
 }
 export async function geocodeAddresses(posts: Post[]): Promise<Localization[]> {
@@ -61,10 +61,7 @@ export async function calculateDistance(
   coords1: { latitude: number; longitude: number },
   coords2: { latitude: number; longitude: number },
 ): Promise<number> {
-  // Calculate the distance between two sets of coordinates
-  // You can use a library or implement a formula to calculate the distance based on latitude and longitude
-  // Here's an example using the Haversine formula:
-  const earthRadius = 6371; // Radius of the Earth in kilometers
+  const earthRadius = 6371;
   const latDiff = (coords2.latitude - coords1.latitude) * (Math.PI / 180);
   const lonDiff = (coords2.longitude - coords1.longitude) * (Math.PI / 180);
   const a =
@@ -86,7 +83,6 @@ export async function calculateNearestPostsToUniversity(
     console.log('universityAddress', universityAddress);
     console.log(posts);
 
-    // const [city, state, postal_code] = universityAddress.split(',').map((item) => item.trim());
     const [city, state, postal_code] = splitAddress(universityAddress);
     console.log(state);
     const universityStatePosts = posts.filter((post) => post.city === city);

@@ -22,6 +22,8 @@ export const Endpoints = {
     MAX_SURFACE: '/maxSurface',
     NEAR_POSTS: '/near/:id',
   },
+  allPosts: '/totalPosts',
+
   user: {
     ROOT: '/users',
     ALL: '/users',

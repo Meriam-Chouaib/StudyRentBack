@@ -1,4 +1,4 @@
-import { Favorite, Files, Post, Prisma } from '@prisma/client';
+import { Favorite, Files, Post, Prisma, User } from '@prisma/client';
 // queries
 import * as postQueries from '../queries/post.queries';
 import * as userQueries from '../queries/user.queries';
@@ -70,6 +70,15 @@ const getAllListPosts = async () => {
     console.log(e);
   }
 };
+// _____________________________________________ get total posts with filter _______________________________
+const getTotalPostsFiltred = async (filter: Filter) => {
+  try {
+    const posts = await postQueries.getTotalPosts(filter);
+    return posts;
+  } catch (e) {
+    console.log(e);
+  }
+};
 // _____________________________________________  get posts by owner  ______________________________________________________________________
 
 const getPostsByOwner = async ({ page, rowsPerPage, filter, idOwner }: GetPostsParams) => {
@@ -99,8 +108,9 @@ const getPostById = async (postId: number): Promise<ApiResponse> => {
     if (!post) {
       throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
     }
+    const owner: User = await userQueries.getUserById(post.posterId);
     const localization = await geocodeAddress(post.state, post?.postal_code, post?.city);
-    return new ApiResponse(httpStatus.OK, { post, localization }, `Post with id ${postId}`);
+    return new ApiResponse(httpStatus.OK, { post, localization, owner }, `Post with id ${postId}`);
   } catch (e) {
     throw new ApiError(e.statusCode, e.message);
   }
@@ -154,8 +164,13 @@ const editPost = async (postId: number, data: Post, fileData: Express.Multer.Fil
       },
       fileData,
     );
+    const localization = await geocodeAddress(data.state, data.postal_code, data.city);
 
-    return updatedInfoPost;
+    return {
+      status: 200,
+      data: { post: updatedInfoPost, localization: localization },
+      message: 'test update post',
+    };
   } catch (e) {
     console.log(e);
 
@@ -293,4 +308,5 @@ export {
   getListFavorite,
   deletePostFromFavoriteList,
   getAllListPosts,
+  getTotalPostsFiltred,
 };
