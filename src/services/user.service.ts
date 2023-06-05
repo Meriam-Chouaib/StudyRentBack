@@ -1,11 +1,14 @@
 import { User } from '@prisma/client';
 // queries
 import * as userQueries from '../queries/user.queries';
+import * as postQueries from '../queries/post.queries';
+
 import ApiError from '../errors/ApiError';
 import httpStatus from 'http-status';
 import { universities } from '../config/addresses_universities';
-import { getUniversityAddress } from './geocode.service';
+import { geocodeAddress, getUniversityAddress } from './geocode.service';
 import { GetPostsParams } from '../types/post/post.types';
+import { splitAddress } from '../utils/splitAddress';
 
 // ______________________________________________________________ *** Edit user ***___________________________________________________________
 
@@ -51,6 +54,10 @@ const deleteUserById = async (userId: number) => {
     if (!userToDelete) {
       throw new ApiError(httpStatus.NOT_FOUND, `User with id ${userId} not found`);
     }
+    const posts = await postQueries.getDataPosts();
+    posts.posts.map(async (post) => {
+      if (post.posterId === userId) await postQueries.deletePost(post.id);
+    });
     return await userQueries.deleteUserById(userId);
   } catch (e) {
     console.log(e);

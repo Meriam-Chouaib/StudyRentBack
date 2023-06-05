@@ -1,4 +1,3 @@
-import { getTotalPosts } from './../queries/post.queries';
 import { Post } from '@prisma/client';
 import { Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
@@ -84,7 +83,21 @@ const getNearestPostsToUniversity = async (
   res.status(200).send(postsNearest);
   console.log('postsNearest', postsNearest);
 };
+
+//_____________________________________ get all posts ______________________________________
+
+const getTotalPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  const { filter } = req.query;
+
+  const posts = await postService.getTotalPostsFiltred(filter as Filter);
+
+  res
+    .status(200)
+    .send({ data: { posts: posts, message: 'data received successfully', status: httpStatus.OK } });
+  console.log('postsNearest', posts);
+};
 // ____________________________________get posts by owner___________________________________
+
 const getPostsByOwner = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const page = Number(req.query.page);
@@ -289,4 +302,5 @@ export {
   getFavoriteList,
   deletePostFromFavoris,
   getNearestPostsToUniversity,
+  getTotalPosts,
 };

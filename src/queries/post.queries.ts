@@ -379,3 +379,13 @@ export const getMaximalPostSurface = async (): Promise<number> => {
     console.log(err);
   }
 };
+export const getDataPosts = async (): Promise<responseGetTotalPosts> => {
+  try {
+    const allposts = await db.post.findMany();
+    // console.log('allposts', allposts);
+
+    return { nbPosts: allposts.length, posts: allposts };
+  } catch (err) {
+    console.log(err);
+  }
+};

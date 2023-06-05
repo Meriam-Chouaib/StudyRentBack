@@ -185,4 +185,6 @@ postRouter.post(
 );
 postRouter.get(Endpoints.post.NEAR_POSTS, verifyToken, PostController.getNearestPostsToUniversity);
 
+postRouter.get(Endpoints.allPosts, PostController.getTotalPosts);
+
 export default postRouter;
