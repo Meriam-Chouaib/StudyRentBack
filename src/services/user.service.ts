@@ -66,8 +66,15 @@ const getAllUsers = async (filterFields: GetPostsParams) => {
     console.log('filterFields service', filterFields);
 
     const users = await userQueries.getAllUsers(filterFields);
-    const nbPages = Math.ceil(users.length / filterFields.rowsPerPage);
-    const nbUsers = await userQueries.getNumberUsers();
+    // const students = await userQueries.getAllStudents(filterFields);
+    // const owners = await userQueries.getAllOwners(filterFields);
+    const nbUsers = await userQueries.getNumberUsers(filterFields.role);
+    const nbPages = Math.ceil(nbUsers / filterFields.rowsPerPage);
+    console.log('nb pages', nbPages);
+
+    // console.log('students', students);
+
+    // return { users, nbPages, nbUsers, currentPage: Number(filterFields.page), students, owners };
     return { users, nbPages, nbUsers, currentPage: Number(filterFields.page) };
   } catch (e) {
     console.log(e);

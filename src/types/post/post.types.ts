@@ -8,6 +8,7 @@ export type GetPostsParams = {
   idOwner?: number;
   idStudent?: number;
   universityAddress?: string;
+  role?: string;
 };
 export type GetFavoriteListParams = {
   page?: number;

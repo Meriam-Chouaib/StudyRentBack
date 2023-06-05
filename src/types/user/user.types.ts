@@ -5,4 +5,5 @@ export type GetUsersParams = {
   page: number;
   rowsPerPage: number;
   search?: string;
+  role?: string;
 };
