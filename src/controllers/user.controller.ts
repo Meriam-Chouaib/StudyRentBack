@@ -53,7 +53,7 @@ const getUserById = async (req: Request, res: Response, next: NextFunction): Pro
 
     res.status(httpStatus.OK).send(await userService.getUserById(userId));
   } catch (e) {
-    throw new ApiError(e.statusCode, e.message);
+    console.log(e);
   }
 };
 
@@ -65,7 +65,7 @@ const deleteUserById = async (req: Request, res: Response, next: NextFunction): 
 
     res.status(httpStatus.OK).send(await userService.deleteUserById(userId));
   } catch (e) {
-    throw new ApiError(e.statusCode, e.message);
+    console.log(e);
   }
 };
 export { editUser, getAllUsers, getUserById, deleteUserById };

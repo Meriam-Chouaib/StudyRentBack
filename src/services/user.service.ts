@@ -92,11 +92,16 @@ const getAllUsers = async (filterFields: GetPostsParams) => {
 
 const getUserById = async (userId: number) => {
   const user = await userQueries.getUserById(userId);
-
+  let localizationUniversity = {};
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, `User with id ${userId} not found`);
   }
-  return user;
-};
+  if (user.universityAddress) {
+    const addresse = splitAddress(user.universityAddress);
 
+    localizationUniversity = await geocodeAddress(addresse[1], addresse[2], addresse[0]);
+
+    return { user, localizationUniversity };
+  }
+};
 export { editUser, getAllUsers, getUserById, deleteUserById };
