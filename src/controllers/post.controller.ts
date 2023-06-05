@@ -75,7 +75,7 @@ const getNearestPostsToUniversity = async (
   const userId = Number(req.params.id);
   const posts = (await postService.getAllListPosts()).posts;
 
-  const universityAddress = (await userService.getUserById(userId)).universityAddress;
+  const universityAddress = (await userService.getUserById(userId)).user.universityAddress;
   const postsNearest = await geoCodeService.calculateNearestPostsToUniversity(
     universityAddress,
     posts,
