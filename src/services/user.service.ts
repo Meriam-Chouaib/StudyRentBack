@@ -24,7 +24,7 @@ const editUser = async (userId: number, user: User) => {
       const universityAddress = await getUniversityAddress(user.university);
 
       if (!universityAddress) {
-        throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid university selected');
+        console.log('Invalid university selected');
       }
 
       user.universityAddress = universityAddress;
@@ -100,8 +100,7 @@ const getUserById = async (userId: number) => {
     const addresse = splitAddress(user.universityAddress);
 
     localizationUniversity = await geocodeAddress(addresse[1], addresse[2], addresse[0]);
-
-    return { user, localizationUniversity };
   }
+  return { user, localizationUniversity };
 };
 export { editUser, getAllUsers, getUserById, deleteUserById };
