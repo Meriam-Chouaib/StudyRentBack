@@ -8,7 +8,6 @@ import { applyFilters, testValue } from '../utils/whereResult';
 //-----------connection to the database
 const db = getDbInstance();
 
-// create post
 interface FilterFields {
   city?: string;
   title?: string;
@@ -16,7 +15,12 @@ interface FilterFields {
   price?: number[];
   surface?: number[];
 }
+export interface responseGetTotalPosts {
+  nbPosts: number;
+  posts: Post[];
+}
 
+// _______________________________________________________ create post______________________________________________________________________
 export const createPost = async (post: Post, filesData: Express.Multer.File[]): Promise<Post> => {
   try {
     return await db.post.create({
@@ -55,19 +59,17 @@ export const createPost = async (post: Post, filesData: Express.Multer.File[]): 
   }
 };
 
-// get posts filtred
-
+// _______________________________________________________ get posts filtred ______________________________________________________________________
 export const getPosts = async ({
   page,
   rowsPerPage,
   filter,
   universityAddress,
   idOwner,
+  search,
 }: GetPostsParams): Promise<Post[]> => {
   try {
-    console.log('filteeeeeeeeeerr', filter);
-
-    let filters: any = { where: {} }; // Initialize filters with a default value
+    let filters: any = { where: {} };
     if (page && rowsPerPage) {
       filters = {
         ...filters,
@@ -79,11 +81,8 @@ export const getPosts = async ({
       };
     }
     if (filter) {
-      console.log('filter', filter);
-
       const filterObject: FilterFields = JSON.parse(filter.toString());
-      const { nb_rooms, price, surface, title, city } = filterObject;
-      console.log(filterObject);
+
       filters = {
         ...filters,
         where: applyFilters<FilterFields>(filterObject),
@@ -100,16 +99,28 @@ export const getPosts = async ({
         },
       };
     }
+    if (search) {
+      filters = {
+        ...filters,
+        where: {
+          OR: [
+            { title: { contains: search } },
+            { description: { contains: search } },
+            { city: { contains: search } },
+            { state: { contains: search } },
+            { postal_code: { contains: search } },
+          ],
+        },
+      };
+    }
 
     return await db.post.findMany(filters);
   } catch (err) {
     console.log(err);
   }
 };
-export interface responseGetTotalPosts {
-  nbPosts: number;
-  posts: Post[];
-}
+
+// _______________________________________________________ get total posts  ______________________________________________________________________
 export const getTotalPosts = async (filter: Filter): Promise<responseGetTotalPosts> => {
   try {
     let filters = {};
@@ -131,7 +142,6 @@ export const getTotalPosts = async (filter: Filter): Promise<responseGetTotalPos
     };
 
     const allposts = await db.post.findMany(filters);
-    // console.log('allposts', allposts);
 
     return { nbPosts: allposts.length, posts: allposts };
   } catch (err) {
@@ -139,8 +149,7 @@ export const getTotalPosts = async (filter: Filter): Promise<responseGetTotalPos
   }
 };
 
-// get posts by owner
-
+// _______________________________________________________ get posts by owner  ______________________________________________________________________
 export const getPostsByOwner = async ({
   page,
   rowsPerPage,
@@ -162,6 +171,8 @@ export const getPostsByOwner = async ({
     console.log(err);
   }
 };
+
+// _______________________________________________________ get total posts by owner  ______________________________________________________________________
 export const getTotalPostsByOwner = async (filter, idOwner): Promise<number> => {
   try {
     const posts = await db.post.findMany({
@@ -178,7 +189,7 @@ export const getTotalPostsByOwner = async (filter, idOwner): Promise<number> => 
   }
 };
 
-// get post by id
+// _______________________________________________________ get post by id  ______________________________________________________________________
 export const getPostById = async (postId: number): Promise<Post | null> => {
   try {
     const post: Post | null = await db.post.findUnique({
@@ -193,7 +204,8 @@ export const getPostById = async (postId: number): Promise<Post | null> => {
     console.log(err);
   }
 };
-// delete post by id
+
+// _______________________________________________________ delete post by id  ______________________________________________________________________
 export const deletePost = async (postId: number): Promise<void> => {
   try {
     await db.post.delete({
@@ -204,7 +216,7 @@ export const deletePost = async (postId: number): Promise<void> => {
   }
 };
 
-// edit post by id
+// _______________________________________________________  edit post by id  ______________________________________________________________________
 export const editPost = async (
   postId: number,
   post: Post,
@@ -248,6 +260,8 @@ export const editPost = async (
     console.log(err);
   }
 };
+
+// _______________________________________________________  Add post to favorite list  ______________________________________________________________________
 export const addPostToFavorite = async (userId: number, postId: number): Promise<Post> => {
   console.log(userId, postId);
 
@@ -263,6 +277,9 @@ export const addPostToFavorite = async (userId: number, postId: number): Promise
     console.log(err);
   }
 };
+
+// _______________________________________________________  Get favorite list ______________________________________________________________________
+
 export const getListFavorite = async ({
   page,
   rowsPerPage,
@@ -288,6 +305,7 @@ export const getListFavorite = async ({
   }
 };
 
+// _______________________________________________________  Get total favorite list ______________________________________________________________________
 export const getTotalListFavorite = async (userId: number): Promise<number> => {
   try {
     let filters = {};
@@ -303,6 +321,7 @@ export const getTotalListFavorite = async (userId: number): Promise<number> => {
   }
 };
 
+// _______________________________________________________  delete Post From Favorite List ______________________________________________________________________
 export const deletePostFromFavorisList = async (id: number): Promise<void> => {
   try {
     await db.favorite.delete({
@@ -315,6 +334,8 @@ export const deletePostFromFavorisList = async (id: number): Promise<void> => {
     console.log(err);
   }
 };
+
+// _______________________________________________________  get Minimal Post Price  ______________________________________________________________________
 export const getMinimalPostPrice = async (): Promise<Prisma.Decimal> => {
   try {
     const minimalPrice = await db.post.findFirst({
@@ -331,6 +352,8 @@ export const getMinimalPostPrice = async (): Promise<Prisma.Decimal> => {
     console.log(err);
   }
 };
+
+// _______________________________________________________  get Maximal Post Price  ______________________________________________________________________
 export const getMaximalPostPrice = async (): Promise<Prisma.Decimal> => {
   try {
     const maximalPrice = await db.post.findFirst({
@@ -347,6 +370,8 @@ export const getMaximalPostPrice = async (): Promise<Prisma.Decimal> => {
     console.log(err);
   }
 };
+
+// _______________________________________________________  get minimal Post surface  ______________________________________________________________________
 export const getMinimalPostSurface = async (): Promise<number> => {
   try {
     const minimalSurface = await db.post.findFirst({
@@ -363,6 +388,8 @@ export const getMinimalPostSurface = async (): Promise<number> => {
     console.log(err);
   }
 };
+
+// _______________________________________________________  get Maximal Post Surface  ______________________________________________________________________
 export const getMaximalPostSurface = async (): Promise<number> => {
   try {
     const maximalPrice = await db.post.findFirst({
@@ -379,11 +406,11 @@ export const getMaximalPostSurface = async (): Promise<number> => {
     console.log(err);
   }
 };
+
+// _______________________________________________________  get Data Posts  ______________________________________________________________________
 export const getDataPosts = async (): Promise<responseGetTotalPosts> => {
   try {
     const allposts = await db.post.findMany();
-    // console.log('allposts', allposts);
-
     return { nbPosts: allposts.length, posts: allposts };
   } catch (err) {
     console.log(err);

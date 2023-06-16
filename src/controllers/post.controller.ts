@@ -10,7 +10,7 @@ import * as geoCodeService from '../services/geocode.service';
 import * as userService from '../services/user.service';
 import ApiResponse from '../utils/ApiResponse';
 
-//------------------------- create post --------------------------------------
+//---------------------------------------------------------- create post --------------------------------------------------------
 /**
  * create post
  * @param req
@@ -33,16 +33,16 @@ const createPost = async (req: Request, res: Response, next: NextFunction): Prom
     next(e);
   }
 };
-// ____________________________________get posts_______________________
+// ___________________________________________  get posts _________________________________________________________________________
 
 const getPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page, rowsPerPage, filter, universityAddress, idOwner } = req.query;
+    const { page, rowsPerPage, filter, universityAddress, idOwner, search } = req.query;
 
     let filterFields: GetPostsParams = {
       page: Number(page),
       rowsPerPage: Number(rowsPerPage),
-      // filter: filter as Filter,
+      search: search as string,
     };
     console.log('filterFields controller', filterFields);
 
@@ -57,6 +57,9 @@ const getPosts = async (req: Request, res: Response, next: NextFunction): Promis
     if (idOwner) {
       filterFields = { ...filterFields, idOwner: Number(idOwner) };
     }
+    if (search) {
+      filterFields = { ...filterFields, search: search as string };
+    }
 
     const result = await postService.getPosts(filterFields);
     return new ApiResponse(httpStatus.OK, result, 'data received successfully!').send(res);
@@ -66,7 +69,7 @@ const getPosts = async (req: Request, res: Response, next: NextFunction): Promis
     console.log(e);
   }
 };
-// ____________________________________ getNearestPostsToUniversity_________________________
+// _____________________________________ getNearestPostsToUniversity ____________________________________________________________________
 const getNearestPostsToUniversity = async (
   req: Request,
   res: Response,
@@ -84,7 +87,7 @@ const getNearestPostsToUniversity = async (
   console.log('postsNearest', postsNearest);
 };
 
-//_____________________________________ get all posts ______________________________________
+//_____________________________________ get all posts ___________________________________________________________________________________
 
 const getTotalPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { filter } = req.query;
@@ -96,7 +99,7 @@ const getTotalPosts = async (req: Request, res: Response, next: NextFunction): P
     .send({ data: { posts: posts, message: 'data received successfully', status: httpStatus.OK } });
   console.log('postsNearest', posts);
 };
-// ____________________________________get posts by owner___________________________________
+// ____________________________________get posts by owner_________________________________________________________________________________
 
 const getPostsByOwner = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -124,7 +127,7 @@ const getPostsByOwner = async (req: Request, res: Response, next: NextFunction):
   }
 };
 
-// ____________________________________get post by id_____________________
+// ______________________________________ get post by id ______________________________________________________________________________________
 const getPostById = async (
   req: Request,
   res: Response,
@@ -144,22 +147,18 @@ const getPostById = async (
   }
 };
 
-// delete post
+// ______________________________________ delete post _________________________________________________________________________________________
 const deletePost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const postId = req.params.id;
-    // get the post by id
     const postToDelete = await postService.getPostById(Number(postId));
     console.log(postToDelete);
     if (!postToDelete) {
       throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
     }
-    // delete the associated files first
     await postService.deleteFiles(Number(postId));
-    // delete the post itself
     await postService.deletePost(Number(postId));
     res.status(httpStatus.OK).send('deletedPost');
-    // return new ApiResponse(httpStatus.OK, {}, 'Post deleted successfully!');
   } catch (e) {
     res.status(e.statusCode).send(e.message);
   }
@@ -174,7 +173,7 @@ const deleteFiles = async (req: Request, res: Response, next: NextFunction): Pro
   }
 };
 
-// edit post
+// ______________________________________ edit post ___________________________________________________________________________________________
 const editPost = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     console.log('req.files', req.files);
@@ -191,6 +190,8 @@ const editPost = async (req: Request, res: Response, next: NextFunction): Promis
     throw new ApiError(e.statusCode, e.message);
   }
 };
+
+// ______________________________________ add Post To Favorite _________________________________________________________________________________
 const addPostToFavorite = async (
   req: Request,
   res: Response,
@@ -206,6 +207,8 @@ const addPostToFavorite = async (
     res.status(500).json({ error: error.message });
   }
 };
+
+// ______________________________________ get Favorite List ____________________________________________________________________________________
 const getFavoriteList = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const userId = Number(req.params.id);
   const { page, rowsPerPage } = req.query;
@@ -222,6 +225,8 @@ const getFavoriteList = async (req: Request, res: Response, next: NextFunction):
     res.status(500).json({ error: error.message });
   }
 };
+
+// ______________________________________ delete Post From Favorite list _______________________________________________________________________
 const deletePostFromFavoris = async (
   req: Request,
   res: Response,
@@ -237,7 +242,7 @@ const deletePostFromFavoris = async (
   }
 };
 
-// _______________________________________________________________ price max and min______________________________________________________
+// _______________________________________________________________ get max and min surface and price____________________________________________
 const getMaximalPostPrice = async (
   req: Request,
   res: Response,
