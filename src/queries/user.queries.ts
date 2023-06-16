@@ -84,91 +84,19 @@ export const getAllUsers = async ({
   return await db.user.findMany(filters);
 };
 
-// -------------------------Get all students -----------------------------------------------------------
-// export const getAll = async ({
-//   page,
-//   rowsPerPage,
-//   search,
-//   role,
-// }: GetUsersParams): Promise<User[]> => {
-//   let filters: any = { where: {} };
-//   if (page && rowsPerPage) {
-//     filters = {
-//       ...filters,
-//       skip: (page - 1) * rowsPerPage,
-//       take: rowsPerPage,
-//     };
-//   }
-//   if (search) {
-//     filters = {
-//       ...filters,
-//       where: {
-//         OR: [
-//           { email: { contains: search } },
-//           { username: { contains: search } },
-//           { university: { contains: search } },
-//           { universityAddress: { contains: search } },
-//           { phone: { contains: search } },
-//         ],
-//         role: { equals: 'STUDENT' }, // Filter users with the role "STUDENT"
-//       },
-//     };
-//   } else {
-//     filters = {
-//       ...filters,
-//       where: {
-//         role: { equals: 'STUDENT' }, // Filter users with the role "STUDENT"
-//       },
-//     };
-//   }
-
-//   return await db.user.findMany(filters);
-// };
-// export const getAllOwners = async ({
-//   page,
-//   rowsPerPage,
-//   search,
-// }: GetUsersParams): Promise<User[]> => {
-//   let filters: any = { where: {} };
-//   if (page && rowsPerPage) {
-//     filters = {
-//       ...filters,
-//       skip: (page - 1) * rowsPerPage,
-//       take: rowsPerPage,
-//     };
-//   }
-//   if (search) {
-//     filters = {
-//       ...filters,
-//       where: {
-//         OR: [
-//           { email: { contains: search } },
-//           { username: { contains: search } },
-//           { university: { contains: search } },
-//           { universityAddress: { contains: search } },
-//           { phone: { contains: search } },
-//         ],
-//         role: { equals: 'OWNER' }, // Filter users with the role "STUDENT"
-//       },
-//     };
-//   } else {
-//     filters = {
-//       ...filters,
-//       where: {
-//         role: { equals: 'OWNER' }, // Filter users with the role "STUDENT"
-//       },
-//     };
-//   }
-
-//   return await db.user.findMany(filters);
-// };
-
 //-------------------------Get the number of total users------------------------------------------------
 
-export const getNumberUsers = async (role: string) => {
+export const getNumberUsers = async (filterFields: GetPostsParams) => {
   const count = await db.user.count({
     where: {
-      role: { equals: role as user_role },
+      OR: [
+        { email: { contains: filterFields.search } },
+        { username: { contains: filterFields.search } },
+        { university: { contains: filterFields.search } },
+        { universityAddress: { contains: filterFields.search } },
+        { phone: { contains: filterFields.search } },
+      ],
+      role: { equals: filterFields.role as user_role },
     },
   });
 
