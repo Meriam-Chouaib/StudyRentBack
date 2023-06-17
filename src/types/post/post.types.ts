@@ -1,3 +1,5 @@
+// src/types/post post.type.ts
+
 import { Post, Prisma } from '@prisma/client';
 
 export type CreatePost = Omit<Post, 'id' | 'likes' | 'datePost'>;
@@ -9,6 +11,7 @@ export type GetPostsParams = {
   idStudent?: number;
   universityAddress?: string;
   role?: string;
+  search?: string;
 };
 export type GetFavoriteListParams = {
   page?: number;

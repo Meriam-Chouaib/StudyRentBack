@@ -33,7 +33,7 @@ const createPost = async (data: Post, fileData: Express.Multer.File[]) => {
 // _____________________________________________  get posts with filter  ______________________________________________________________________
 const getPosts = async (filterFields: GetPostsParams) => {
   try {
-    console.log('filterFields', filterFields);
+    console.log('filterFields', filterFields.filter);
     if (filterFields.universityAddress) {
       const [city] = splitAddress(filterFields.universityAddress);
       filterFields = { ...filterFields, universityAddress: city };
@@ -47,7 +47,7 @@ const getPosts = async (filterFields: GetPostsParams) => {
 
     const nbPosts = filterFields.universityAddress
       ? posts.length
-      : (await postQueries.getTotalPosts(filterFields.filter)).nbPosts;
+      : (await postQueries.getTotalPosts(filterFields.filter, filterFields.search)).nbPosts;
 
     const nbPages = Math.ceil(nbPosts / filterFields.rowsPerPage);
 
@@ -64,7 +64,7 @@ const getPosts = async (filterFields: GetPostsParams) => {
 };
 const getAllListPosts = async () => {
   try {
-    const posts = await postQueries.getTotalPosts(undefined);
+    const posts = await postQueries.getTotalPosts(undefined, '');
     return posts;
   } catch (e) {
     console.log(e);
@@ -73,7 +73,7 @@ const getAllListPosts = async () => {
 // _____________________________________________ get total posts with filter _______________________________
 const getTotalPostsFiltred = async (filter: Filter) => {
   try {
-    const posts = await postQueries.getTotalPosts(filter);
+    const posts = await postQueries.getTotalPosts(filter, '');
     return posts;
   } catch (e) {
     console.log(e);

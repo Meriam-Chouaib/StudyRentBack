@@ -75,7 +75,7 @@ const getAllUsers = async (filterFields: GetPostsParams) => {
     const users = await userQueries.getAllUsers(filterFields);
     // const students = await userQueries.getAllStudents(filterFields);
     // const owners = await userQueries.getAllOwners(filterFields);
-    const nbUsers = await userQueries.getNumberUsers(filterFields.role);
+    const nbUsers = await userQueries.getNumberUsers(filterFields);
     const nbPages = Math.ceil(nbUsers / filterFields.rowsPerPage);
     console.log('nb pages', nbPages);
 
