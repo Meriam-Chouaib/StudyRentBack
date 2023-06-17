@@ -121,13 +121,15 @@ export const getPosts = async ({
 };
 
 // _______________________________________________________ get total posts  ______________________________________________________________________
-export const getTotalPosts = async (filter: Filter): Promise<responseGetTotalPosts> => {
+export const getTotalPosts = async (
+  filter: Filter,
+  search: string,
+): Promise<responseGetTotalPosts> => {
   try {
     let filters = {};
     if (filter && filter !== undefined) {
       const filterObject: FilterFields = JSON.parse(filter.toString());
       const { nb_rooms, price, surface, title, city } = filterObject;
-      console.log(filterObject);
       filters = {
         ...filters,
         where: applyFilters<FilterFields>(filterObject),
@@ -140,7 +142,20 @@ export const getTotalPosts = async (filter: Filter): Promise<responseGetTotalPos
         files: true,
       },
     };
-
+    if (search) {
+      filters = {
+        ...filters,
+        where: {
+          OR: [
+            { title: { contains: search } },
+            { description: { contains: search } },
+            { city: { contains: search } },
+            { state: { contains: search } },
+            { postal_code: { contains: search } },
+          ],
+        },
+      };
+    }
     const allposts = await db.post.findMany(filters);
 
     return { nbPosts: allposts.length, posts: allposts };

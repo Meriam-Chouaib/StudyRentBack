@@ -76,7 +76,7 @@ export const getAllUsers = async ({
     filters = {
       ...filters,
       where: {
-        role: { equals: role }, // Filter users with the role "STUDENT"
+        role: { equals: role },
       },
     };
   }
@@ -87,18 +87,32 @@ export const getAllUsers = async ({
 //-------------------------Get the number of total users------------------------------------------------
 
 export const getNumberUsers = async (filterFields: GetPostsParams) => {
-  const count = await db.user.count({
-    where: {
-      OR: [
-        { email: { contains: filterFields.search } },
-        { username: { contains: filterFields.search } },
-        { university: { contains: filterFields.search } },
-        { universityAddress: { contains: filterFields.search } },
-        { phone: { contains: filterFields.search } },
-      ],
-      role: { equals: filterFields.role as user_role },
-    },
-  });
+  const { search, role } = filterFields;
+  let filters: any = { where: {} };
+
+  if (search) {
+    filters = {
+      ...filters,
+      where: {
+        OR: [
+          { email: { contains: search } },
+          { username: { contains: search } },
+          { university: { contains: search } },
+          { universityAddress: { contains: search } },
+          { phone: { contains: search } },
+        ],
+        role: { equals: role },
+      },
+    };
+  } else {
+    filters = {
+      ...filters,
+      where: {
+        role: { equals: role },
+      },
+    };
+  }
+  const count = await db.user.count(filters);
 
   return count;
 };
