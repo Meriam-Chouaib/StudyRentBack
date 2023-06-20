@@ -73,8 +73,12 @@ const getAllListPosts = async () => {
 // _____________________________________________ get total posts with filter _______________________________
 const getTotalPostsFiltred = async (filter: Filter) => {
   try {
-    const posts = await postQueries.getTotalPosts(filter, '');
-    return posts;
+    const posts = (await postQueries.getTotalPosts(filter, '')).posts;
+    const nbPosts = (await postQueries.getTotalPosts(filter, '')).nbPosts;
+
+    const localizations = await geocodeAddresses(posts);
+
+    return { posts, localizations, nbPosts };
   } catch (e) {
     console.log(e);
   }
@@ -122,6 +126,7 @@ const deletePost = async (postId: number): Promise<void> => {
   try {
     // first, get the post by its ID to ensure it exists
     const postToDelete = await postQueries.getPostById(postId);
+    await postQueries.deletePostFromFavorisList(postId);
 
     if (!postToDelete) {
       throw new ApiError(httpStatus.NOT_FOUND, `Post with id ${postId} not found`);
@@ -214,6 +219,7 @@ const getListFavorite = async ({ page, rowsPerPage, userId }: GetFavoriteListPar
     const nbPosts = await postQueries.getTotalListFavorite(userId);
 
     const nbPages = Math.ceil(nbPosts / rowsPerPage);
+
     if (listFavorites) {
       await Promise.all(
         listFavorites.map(async (favorit: Favorite) => {
@@ -227,7 +233,11 @@ const getListFavorite = async ({ page, rowsPerPage, userId }: GetFavoriteListPar
 
     return new ApiResponse(
       httpStatus.OK,
-      { posts, localizations: posts ? await geocodeAddresses(posts) : [], nbPages: nbPages },
+      {
+        posts,
+        localizations: posts ? await geocodeAddresses(posts) : [],
+        nbPages: nbPages,
+      },
       'List of posts',
     );
   } catch (e) {

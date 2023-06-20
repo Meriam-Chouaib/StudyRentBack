@@ -172,10 +172,10 @@ postRouter.delete(Endpoints.post.FAVORIS, verifyToken, PostController.deletePost
  * @swagger
  * /:
  *   post:
- *     summary: get localisation
- *     description: get localisation
+ *     summary: get localization
+ *     description: get localization
  *       200:
- *         description: Get localisation successfully
+ *         description: Get localization successfully
  */
 postRouter.post(
   Endpoints.geocode,
@@ -183,6 +183,16 @@ postRouter.post(
   verifyToken,
   geocodeController.geocodeAddresse,
 );
+
+/**
+ * @swagger
+ * /:
+ *   post:
+ *     summary: get nearest posts
+ *     description: get localization
+ *       200:
+ *         description: Get nearest posts successfully
+ */
 postRouter.get(Endpoints.post.NEAR_POSTS, verifyToken, PostController.getNearestPostsToUniversity);
 
 postRouter.get(Endpoints.allPosts, PostController.getTotalPosts);

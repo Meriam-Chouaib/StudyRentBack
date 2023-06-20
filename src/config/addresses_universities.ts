@@ -13,7 +13,7 @@ export const universities = [
   },
   {
     name: 'Université de Kairouan',
-    address: 'Kairouan, Tunisia, 3100',
+    address: 'Kairouan, Tunisia, 3121',
   },
   {
     name: 'Université de Kasserine',

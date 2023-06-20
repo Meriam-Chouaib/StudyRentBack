@@ -92,12 +92,19 @@ const getNearestPostsToUniversity = async (
 const getTotalPosts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { filter } = req.query;
 
-  const posts = await postService.getTotalPostsFiltred(filter as Filter);
+  const { localizations, posts, nbPosts } = await postService.getTotalPostsFiltred(
+    filter as Filter,
+  );
 
-  res
-    .status(200)
-    .send({ data: { posts: posts, message: 'data received successfully', status: httpStatus.OK } });
-  console.log('postsNearest', posts);
+  res.status(200).send({
+    data: {
+      posts,
+      localizations,
+
+      message: 'data received successfully',
+      status: httpStatus.OK,
+    },
+  });
 };
 // ____________________________________get posts by owner_________________________________________________________________________________
 
@@ -158,6 +165,7 @@ const deletePost = async (req: Request, res: Response, next: NextFunction): Prom
     }
     await postService.deleteFiles(Number(postId));
     await postService.deletePost(Number(postId));
+
     res.status(httpStatus.OK).send('deletedPost');
   } catch (e) {
     res.status(e.statusCode).send(e.message);

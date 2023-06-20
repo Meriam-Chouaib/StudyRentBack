@@ -12,27 +12,25 @@ const { API } = Endpoints;
 
 const app: Application = express();
 
-// app.use('/static', express.static('public/assets/uploads'));
-// app.use(express.static(`${__dirname}../public/assets/uploads`));
 app.use(express.static(path.join(__dirname, '../public/assets/uploads')));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: '*' }));
 
-// Process Routes
+// _______________________________Process Routes_________________________________________________
 app.use(API, mainRouter);
 
-// Send 404 not found for unknown routes
+// _______________________________ Send 404 not found for unknown routes_________________________
 app.all('*', (req: Request, res: Response, next: NextFunction) => {
   res.status(404).send('this request is not found!');
   next();
 });
 
-// Handle errors
+// ________________________________Handle errors_________________________________________________
 app.use(errorHandler);
 
-// Serve
+// _________________________________Serve_________________________________________________________
 app.listen(PORT, () => {
   Logger.info(`Server is running on port ${PORT}`);
 });
