@@ -29,9 +29,6 @@ export const Endpoints = {
     ALL: '/users',
     detail: '/:id',
   },
-  appartement: {
-    ROOT: '/appartements',
-    CREATE: '/create',
-  },
+
   geocode: '/geocode',
 };
