@@ -37,6 +37,8 @@ const signIn = async (email: string, password: string) => {
       const passwordMatches = await bcrypt.compare(password, user.password);
       if (!passwordMatches) {
         throw new ApiError(404, 'signin.password_invalid_back');
+      } else if (user.role !== 'ADMIN' && user.statut === 'OFFLINE') {
+        throw new ApiError(403, 'signin.user_blocked');
       } else {
         const token = signToken({ id: user.id, email: user.email });
 
