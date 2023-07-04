@@ -16,6 +16,7 @@ const signUp = async (data: User) => {
       const hash = bcrypt.hashSync(data.password, 15);
       data.password = hash;
       data.image = 'test.png';
+      data.statut = 'ONLINE';
       const user = await userQueries.signUp(data);
 
       const token = signToken({ id: user.id, email: data.email });
