@@ -1,0 +1,39 @@
+version: '2'
+services:
+  #Mysql database
+  mysql:
+    image: mysql
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    expose:
+      - ${MYSQL_PORT}
+    restart: always
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+
+  #App
+  app:
+    image: study-rent-api-prod
+    container_name: study-rent-api-prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    command: yarn start
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${PORT}:${PORT}
+
+volumes:
+  mysql_master_data:
+    driver: local

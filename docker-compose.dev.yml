@@ -1,0 +1,52 @@
+version: '2'
+services:
+  #Mysql database
+  mysql:
+    image: mysql
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    expose:
+      - ${MYSQL_PORT}
+    restart: always
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+
+  #Phpmyadmin
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    depends_on:
+      - mysql
+    ports:
+      - '8001:80'
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=${MYSQL_PORT}
+    volumes:
+      - /sessions
+  #App
+  app:
+    image: study-rent-api-dev
+    container_name: study-rent-api-dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    command: yarn start:dev
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - ${PORT}:${PORT}
+
+volumes:
+  mysql_master_data:
+    driver: local

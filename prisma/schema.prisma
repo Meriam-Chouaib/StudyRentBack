@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("MYSQL_DATABASE")
+}
+model User {
+  id        Int         @id @default(autoincrement())
+  email     String      @unique(map: "User_email_key")
+  username  String
+  password  String
+  image     String
+  phone String?
+  university String?
+  isLogged Boolean  @default(true)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @default(now())
+  posts    Post[]
+  statut    user_statut @default(ONLINE)
+  role      user_role 
+  favorites Favorite[]
+  universityAddress String?
+  isActive Boolean @default(true)
+}
+
+enum user_statut {
+  ONLINE
+  OFFLINE
+}
+
+enum user_role {
+  STUDENT
+  OWNER
+  ADMIN
+}
+model           Files{
+  id            Int @id @default(autoincrement())
+
+  filename      String  
+  path String 
+  postId        Int   
+  //appartementId Int 
+  //appartement Appartement @relation(fields:[appartementId], references: [id])
+  post     Post @relation(fields: [postId], references: [id])
+
+}
+model Appartement{
+  id            Int @id @default(autoincrement())
+  nbRooms       Int
+  surface       Int
+  price         Decimal
+  nbRoommate    Int 
+
+  city          String
+  state         String
+  country       String
+  isLocated     Boolean @default(false)
+  //posts         Post[]  
+ // files         Files[]
+}
+model Post {
+  id            Int       @id @default(autoincrement())
+  datePost      DateTime  @default(now())
+  title         String
+  description   String
+  posterId      Int
+  likes         Int    @default(0)
+  poster        User     @relation(fields: [posterId], references: [id])
+  //appartement    Appartement @relation(fields: [appartementId], references: [id])
+  files         Files[]
+  //images         Files[]
+  nb_rooms       Int @default(0)
+  surface       Int @default(0)
+  price         Decimal @default(0)
+  nb_roommate    Int @default(0)
+ 
+  city          String @default("")
+  state         String @default("")
+  isLocated     Boolean @default(false)
+  postal_code   String @default("")
+  
+  favorites      Favorite[] 
+
+}
+model Favorite {
+  id      Int    @id @default(autoincrement())
+  userId  Int
+  user    User   @relation(fields: [userId], references: [id])
+  postId  Int
+  post    Post   @relation(fields: [postId], references: [id])
+  createdAt DateTime @default(now())
+}
